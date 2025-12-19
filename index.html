@@ -34,7 +34,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Segoe UI', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--background);
             color: var(--text);
             overflow-x: hidden;
@@ -138,11 +138,6 @@
             transform: translateY(-1px);
         }
 
-        .btn-secondary {
-            background: var(--secondary);
-            color: var(--text);
-        }
-
         .btn-danger {
             background: var(--danger);
             color: white;
@@ -221,17 +216,23 @@
         }
 
         .profile-btn {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             overflow: hidden;
             cursor: pointer;
-            border: 2px solid var(--border);
+            border: 2px solid var(--primary);
             background: var(--card);
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-secondary);
+        }
+
+        .profile-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .profile-btn i {
@@ -286,6 +287,37 @@
         #map {
             width: 100%;
             height: 100%;
+        }
+
+        .map-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background: var(--card);
+            color: var(--text-secondary);
+            gap: 16px;
+        }
+
+        .location-permission {
+            text-align: center;
+            padding: 20px;
+            background: var(--card);
+            border-radius: 8px;
+            margin: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .location-permission button {
+            margin-top: 12px;
+            padding: 10px 20px;
+            background: var(--primary);
+            color: var(--background);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
         }
 
         /* Main Content */
@@ -807,10 +839,10 @@
         }
 
         .profile-avatar {
-            width: 88px;
-            height: 88px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            border: 2px solid var(--primary);
+            border: 3px solid var(--primary);
             margin: 0 auto 12px;
             overflow: hidden;
             background: var(--card);
@@ -820,8 +852,14 @@
             color: var(--text-secondary);
         }
 
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         .profile-avatar i {
-            font-size: 36px;
+            font-size: 40px;
         }
 
         .profile-name {
@@ -1096,51 +1134,6 @@
             font-size: 13px;
         }
 
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 64px;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            transition: all 0.2s;
-            min-width: 56px;
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-item i {
-            font-size: 18px;
-        }
-
-        .nav-label {
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
         /* Loading Spinner */
         .spinner {
             border: 3px solid rgba(255, 255, 255, 0.1);
@@ -1265,18 +1258,55 @@
             color: var(--danger);
         }
 
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            min-width: 56px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item i {
+            font-size: 18px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .prize-grid {
                 grid-template-columns: 1fr;
-            }
-            
-            .media-controls {
-                grid-template-columns: 1fr;
-            }
-            
-            .purchase-buttons {
-                flex-direction: column;
             }
             
             .logo h1 {
@@ -1360,7 +1390,7 @@
 
     <!-- Main App -->
     <div id="app-container" class="app-container">
-                <!-- Header -->
+        <!-- Header -->
         <div class="header">
             <div class="header-left">
                 <div class="profile-btn" id="profile-button">
@@ -1379,15 +1409,27 @@
             <!-- Map Tab -->
             <div id="map-tab" class="tab-container active">
                 <div class="map-container">
-                    <div id="map"></div>
+                    <div id="map">
+                        <div class="map-loading">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <p>Loading map...</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="location-permission" class="location-permission" style="display: none;">
+                    <p>Location access is required to show zones and missions.</p>
+                    <button id="request-location-btn">Enable Location</button>
                 </div>
                 <div style="padding: 16px;">
                     <h2 style="margin-bottom: 12px; font-size: 18px; color: var(--primary);">Current Zone</h2>
                     <div id="current-zone" style="background: var(--card); padding: 12px; border-radius: 8px; margin-bottom: 16px; border: 1px solid var(--border);">
-                        <p style="color: var(--text-secondary); font-size: 13px;">Not in any zone</p>
+                        <p style="color: var(--text-secondary); font-size: 13px;">Enable location to see zones</p>
                     </div>
                     <div id="nearby-missions" style="margin-top: 16px;">
-                        <!-- Missions will be loaded here -->
+                        <div class="empty-state">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <p>No nearby missions. Move to a zone to see missions.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1396,10 +1438,13 @@
             <div id="missions-tab" class="tab-container">
                 <h2 style="margin-bottom: 12px; font-size: 18px; color: var(--primary);">Missions</h2>
                 <div class="zone-list" id="zone-list">
-                    <!-- Zones will be loaded here -->
+                    <div class="spinner" style="margin: 20px auto;"></div>
                 </div>
                 <div id="missions-list">
-                    <!-- Missions will be loaded here -->
+                    <div class="empty-state">
+                        <i class="fas fa-tasks"></i>
+                        <p>Select a zone to see missions</p>
+                    </div>
                 </div>
             </div>
 
@@ -1422,7 +1467,10 @@
                 </div>
                 
                 <div class="prize-grid" id="prize-grid">
-                    <!-- Prizes will be loaded here -->
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <i class="fas fa-gift"></i>
+                        <p>No prizes available yet. Check back soon!</p>
+                    </div>
                 </div>
             </div>
 
@@ -1438,7 +1486,11 @@
                 </div>
                 
                 <div class="inventory-items" id="inventory-items">
-                    <!-- Inventory items will be loaded here -->
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <p>No items in your inventory yet.</p>
+                        <p style="font-size: 13px; margin-top: 8px;">Complete missions to earn coins and buy prizes!</p>
+                    </div>
                 </div>
             </div>
 
@@ -1453,11 +1505,14 @@
                 </div>
                 
                 <div id="my-rank-card" class="my-rank-card">
-                    <!-- My rank will be loaded here -->
+                    <div class="spinner"></div>
                 </div>
                 
                 <div class="leaderboard-list" id="leaderboard-list">
-                    <!-- Leaderboard entries will be loaded here -->
+                    <div class="empty-state">
+                        <i class="fas fa-trophy"></i>
+                        <p>No leaderboard data available yet.</p>
+                    </div>
                 </div>
             </div>
 
@@ -1467,8 +1522,8 @@
                     <div class="profile-avatar">
                         <i class="fas fa-user"></i>
                     </div>
-                    <h2 class="profile-name" id="profile-name">John Doe</h2>
-                    <p class="profile-email" id="profile-email">john@example.com</p>
+                    <h2 class="profile-name" id="profile-name">Loading...</h2>
+                    <p class="profile-email" id="profile-email">Loading...</p>
                 </div>
                 
                 <div class="profile-stats">
@@ -1629,12 +1684,6 @@
             const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndubW5jc2JidGxwY3d2aWljc2JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxMDU3MTMsImV4cCI6MjA4MTY4MTcxM30.pSOYbXWPLhKItpfDnRMfi3lyPVOvTccQudvN9YIucVs';
             const MAPBOX_TOKEN = 'pk.eyJ1IjoianVzYSIsImEiOiJjbWpjanh5amEwbDEwM2dzOXVhbjZ5dzcwIn0.stWdbPHCrf9sKrRJRmShlg';
             
-            // Emergency Numbers
-            const EMERGENCY_NUMBERS = {
-                ambulance: 'tel:0644106000',
-                tollFree: 'tel:1411'
-            };
-
             // Initialize Supabase
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             
@@ -1643,16 +1692,11 @@
             let currentSession = null;
             let userLocation = null;
             let currentMission = null;
-            let mediaRecorder = null;
-            let recordedChunks = [];
-            let audioRecorder = null;
-            let audioStream = null;
-            let videoStream = null;
-            let recordingTimer = null;
-            let recordingSeconds = 0;
             let selectedPrize = null;
             let currentZone = null;
             let map = null;
+            let zones = [];
+            let zoneMarkers = [];
 
             // ============================================
             // EVENT LISTENERS SETUP
@@ -1672,6 +1716,9 @@
             // Auth buttons
             document.getElementById('login-button').addEventListener('click', login);
             document.getElementById('signup-button').addEventListener('click', signup);
+            
+            // Location permission button
+            document.getElementById('request-location-btn')?.addEventListener('click', requestLocationPermission);
             
             // Bottom navigation
             document.querySelectorAll('.nav-item').forEach(item => {
@@ -1717,21 +1764,6 @@
                 });
             });
             
-            // Media modal buttons
-            document.getElementById('capture-photo-btn').addEventListener('click', capturePhoto);
-            document.getElementById('record-video-btn').addEventListener('click', toggleVideoRecording);
-            document.getElementById('record-audio-btn').addEventListener('click', toggleAudioRecording);
-            document.getElementById('close-media-modal-btn').addEventListener('click', closeMediaModal);
-            
-            // Purchase modal buttons
-            document.getElementById('confirm-purchase-btn').addEventListener('click', confirmPurchase);
-            document.getElementById('close-purchase-modal-btn').addEventListener('click', closePurchaseModal);
-            
-            // Emergency modal buttons
-            document.getElementById('call-ambulance-btn').addEventListener('click', callAmbulance);
-            document.getElementById('call-tollfree-btn').addEventListener('click', callTollFree);
-            document.getElementById('close-emergency-modal-btn').addEventListener('click', closeEmergencyModal);
-            
             // Handle email confirmation
             supabase.auth.onAuthStateChange((event, session) => {
                 console.log('Auth event:', event);
@@ -1751,25 +1783,158 @@
             
             function initializeMap() {
                 try {
-                    if (mapboxgl.supported()) {
-                        map = new mapboxgl.Map({
-                            container: 'map',
-                            style: 'mapbox://styles/mapbox/dark-v11',
-                            center: [17.08, -22.68], // Swakopmund coordinates
-                            zoom: 13,
-                            attributionControl: false
-                        });
-                        
-                        map.addControl(new mapboxgl.NavigationControl());
-                        console.log('Map initialized successfully');
-                    } else {
+                    if (!mapboxgl.supported()) {
                         console.warn('WebGL not supported, map disabled');
-                        document.getElementById('map').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;">Map not available</div>';
+                        document.getElementById('map').innerHTML = '<div class="map-loading"><i class="fas fa-exclamation-triangle"></i><p>Map not supported in your browser</p></div>';
+                        return;
                     }
+                    
+                    if (!MAPBOX_TOKEN || MAPBOX_TOKEN === 'your_mapbox_token_here') {
+                        console.error('Mapbox token not configured');
+                        document.getElementById('map').innerHTML = '<div class="map-loading"><i class="fas fa-exclamation-triangle"></i><p>Map configuration error</p></div>';
+                        return;
+                    }
+                    
+                    mapboxgl.accessToken = MAPBOX_TOKEN;
+                    
+                    map = new mapboxgl.Map({
+                        container: 'map',
+                        style: 'mapbox://styles/mapbox/dark-v11',
+                        center: [17.08, -22.68], // Swakopmund coordinates
+                        zoom: 13,
+                        attributionControl: false
+                    });
+                    
+                    map.addControl(new mapboxgl.NavigationControl());
+                    
+                    map.on('load', function() {
+                        console.log('Map loaded successfully');
+                        document.querySelector('.map-loading').style.display = 'none';
+                        loadZonesForMap();
+                    });
+                    
+                    map.on('error', function(e) {
+                        console.error('Map error:', e.error);
+                        showToast('Map loading failed: ' + e.error.message, 'error');
+                    });
+                    
                 } catch (error) {
                     console.error('Map initialization error:', error);
-                    document.getElementById('map').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;">Map loading failed</div>';
+                    document.getElementById('map').innerHTML = '<div class="map-loading"><i class="fas fa-exclamation-triangle"></i><p>Map loading failed</p></div>';
                 }
+            }
+            
+            async function loadZonesForMap() {
+                if (!map) return;
+                
+                console.log('Loading zones for map...');
+                const { data: zonesData, error } = await supabase
+                    .from('zones')
+                    .select('*')
+                    .eq('is_active', true);
+                
+                if (error) {
+                    console.error('Error loading zones:', error);
+                    return;
+                }
+                
+                zones = zonesData || [];
+                console.log(`Loaded ${zones.length} zones for map`);
+                
+                // Clear existing markers
+                zoneMarkers.forEach(marker => marker.remove());
+                zoneMarkers = [];
+                
+                // Add markers for each zone
+                zones.forEach(zone => {
+                    if (!zone.coordinates || !zone.coordinates.lat || !zone.coordinates.lng) {
+                        console.warn('Zone missing coordinates:', zone.name);
+                        return;
+                    }
+                    
+                    const el = document.createElement('div');
+                    el.className = 'zone-marker';
+                    el.style.width = '24px';
+                    el.style.height = '24px';
+                    el.style.backgroundColor = 'rgba(74, 144, 226, 0.3)';
+                    el.style.borderRadius = '50%';
+                    el.style.border = '3px solid #4a90e2';
+                    el.style.cursor = 'pointer';
+                    el.title = zone.name;
+                    
+                    const marker = new mapboxgl.Marker(el)
+                        .setLngLat([zone.coordinates.lng, zone.coordinates.lat])
+                        .setPopup(new mapboxgl.Popup({ offset: 25 })
+                            .setHTML(`<h3>${zone.name}</h3><p>${zone.description || 'No description'}</p>`))
+                        .addTo(map);
+                    
+                    zoneMarkers.push(marker);
+                    
+                    // Add zone circles if radius is defined
+                    if (zone.radius_meters) {
+                        map.addSource(`zone-${zone.id}`, {
+                            type: 'geojson',
+                            data: {
+                                type: 'Feature',
+                                geometry: {
+                                    type: 'Point',
+                                    coordinates: [zone.coordinates.lng, zone.coordinates.lat]
+                                }
+                            }
+                        });
+                        
+                        map.addLayer({
+                            id: `zone-circle-${zone.id}`,
+                            type: 'circle',
+                            source: `zone-${zone.id}`,
+                            paint: {
+                                'circle-radius': {
+                                    stops: [
+                                        [0, 0],
+                                        [20, zone.radius_meters / 0.075] // Convert meters to pixels at zoom 20
+                                    ],
+                                    base: 2
+                                },
+                                'circle-color': '#4a90e2',
+                                'circle-opacity': 0.1,
+                                'circle-stroke-width': 2,
+                                'circle-stroke-color': '#4a90e2'
+                            }
+                        });
+                    }
+                });
+            }
+            
+            function updateUserLocationOnMap() {
+                if (!map || !userLocation) return;
+                
+                // Remove existing user marker
+                const existingMarkers = document.getElementsByClassName('user-marker');
+                while (existingMarkers.length > 0) {
+                    existingMarkers[0].remove();
+                }
+                
+                // Add new user marker
+                const el = document.createElement('div');
+                el.className = 'user-marker';
+                el.style.width = '20px';
+                el.style.height = '20px';
+                el.style.backgroundColor = 'var(--primary)';
+                el.style.borderRadius = '50%';
+                el.style.border = '3px solid var(--background)';
+                el.style.boxShadow = '0 0 10px rgba(255, 255, 255, 0.5)';
+                
+                new mapboxgl.Marker(el)
+                    .setLngLat([userLocation.lng, userLocation.lat])
+                    .addTo(map);
+                
+                // Center map on user
+                map.flyTo({
+                    center: [userLocation.lng, userLocation.lat],
+                    zoom: 15,
+                    essential: true,
+                    duration: 1000
+                });
             }
             
             // ============================================
@@ -1874,7 +2039,17 @@
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
 
                 try {
-                    // 1. Sign up with Supabase Auth
+                    // 1. Check if user already exists in auth
+                    const { data: existingUser } = await supabase.auth.signInWithPassword({
+                        email,
+                        password: 'dummy_password' // Just to check if user exists
+                    }).catch(() => ({ data: { user: null } }));
+
+                    if (existingUser?.user) {
+                        throw new Error('This email is already registered. Please sign in instead.');
+                    }
+
+                    // 2. Sign up with Supabase Auth
                     const { data: authData, error: authError } = await supabase.auth.signUp({
                         email,
                         password,
@@ -1887,66 +2062,80 @@
                     });
 
                     if (authError) {
-                        if (authError.message.includes('already registered')) {
+                        if (authError.message.includes('User already registered')) {
                             throw new Error('This email is already registered. Please sign in instead.');
                         }
                         throw new Error(authError.message);
                     }
 
-                    // 2. Upload profile photo if provided
+                    // 3. Upload profile photo if provided
                     let avatarUrl = null;
                     if (photoFile) {
                         console.log('Uploading profile photo...');
-                        const fileName = `${authData.user.id}/profile_${Date.now()}.jpg`;
-                        const { error: uploadError } = await supabase.storage
-                            .from('profiles')
-                            .upload(fileName, photoFile, {
-                                cacheControl: '3600',
-                                upsert: false
-                            });
-                        
-                        if (!uploadError) {
-                            const { data: urlData } = supabase.storage
+                        try {
+                            // Create profiles bucket if it doesn't exist
+                            const fileName = `${authData.user.id}/profile_${Date.now()}.jpg`;
+                            const { error: uploadError } = await supabase.storage
                                 .from('profiles')
-                                .getPublicUrl(fileName);
-                            avatarUrl = urlData.publicUrl;
-                            console.log('Photo uploaded:', avatarUrl);
+                                .upload(fileName, photoFile, {
+                                    cacheControl: '3600',
+                                    upsert: false
+                                });
+                            
+                            if (!uploadError) {
+                                const { data: urlData } = supabase.storage
+                                    .from('profiles')
+                                    .getPublicUrl(fileName);
+                                avatarUrl = urlData.publicUrl;
+                                console.log('Photo uploaded:', avatarUrl);
+                            }
+                        } catch (uploadError) {
+                            console.warn('Failed to upload profile photo:', uploadError);
+                            // Continue without photo
                         }
                     }
 
-                    // 3. Create user profile in database
+                    // 4. Create user profile in database (with error handling for duplicates)
                     const { error: profileError } = await supabase
                         .from('users')
-                        .insert([{
+                        .upsert([{
                             id: authData.user.id,
                             name,
                             email,
                             phone,
                             avatar_url: avatarUrl,
                             coins: 100, // Starting coins
-                            created_at: new Date().toISOString()
-                        }]);
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        }], {
+                            onConflict: 'id',
+                            ignoreDuplicates: false
+                        });
 
                     if (profileError) {
-                        if (profileError.code === '23505') {
-                            // User already exists in profiles table
-                            console.log('User profile already exists');
-                        } else {
-                            throw new Error('Profile creation failed: ' + profileError.message);
-                        }
+                        console.warn('Profile upsert error (may already exist):', profileError.message);
+                        // Continue anyway - user might have been created by trigger
                     }
 
-                    // 4. Set default role as player
-                    const { error: roleError } = await supabase
-                        .from('user_roles')
-                        .insert([{
-                            user_id: authData.user.id,
-                            role: 'player',
-                            granted_at: new Date().toISOString()
-                        }]);
+                    // 5. Set default role as player (with error handling)
+                    try {
+                        const { error: roleError } = await supabase
+                            .from('user_roles')
+                            .upsert([{
+                                user_id: authData.user.id,
+                                role: 'player',
+                                granted_at: new Date().toISOString(),
+                                updated_at: new Date().toISOString()
+                            }], {
+                                onConflict: 'user_id',
+                                ignoreDuplicates: false
+                            });
 
-                    if (roleError) {
-                        console.warn('Role assignment error (may already exist):', roleError.message);
+                        if (roleError) {
+                            console.warn('Role assignment error (may already exist):', roleError.message);
+                        }
+                    } catch (roleError) {
+                        console.warn('Role assignment failed:', roleError);
                     }
 
                     showSuccess('Account created successfully! Please check your email for verification.');
@@ -1979,20 +2168,23 @@
 
                 if (error) {
                     console.error('Error loading user profile:', error);
-                    // Create profile if it doesn't exist
+                    // Try to create profile if it doesn't exist
                     const { data: userData } = await supabase.auth.getUser();
                     if (userData.user) {
                         const user = userData.user;
                         const { error: insertError } = await supabase
                             .from('users')
-                            .insert([{
+                            .upsert([{
                                 id: user.id,
                                 name: user.user_metadata?.name || 'User',
                                 email: user.email,
                                 phone: user.user_metadata?.phone || '',
                                 coins: 100,
-                                created_at: new Date().toISOString()
-                            }]);
+                                created_at: new Date().toISOString(),
+                                updated_at: new Date().toISOString()
+                            }], {
+                                onConflict: 'id'
+                            });
                         
                         if (!insertError) {
                             return await loadUserProfile(userId);
@@ -2005,13 +2197,8 @@
                     currentUser = data;
                     console.log('User loaded:', data.name);
                     
-                    // Update UI
-                    const avatarElement = document.querySelector('.profile-avatar');
-                    if (data.avatar_url) {
-                        avatarElement.innerHTML = `<img src="${data.avatar_url}" alt="${data.name}" style="width:100%;height:100%;object-fit:cover;">`;
-                    } else {
-                        avatarElement.innerHTML = '<i class="fas fa-user"></i>';
-                    }
+                    // Update UI with profile picture
+                    updateProfilePicture(data.avatar_url);
                     
                     document.getElementById('user-coins').textContent = data.coins;
                     document.getElementById('shop-coins').textContent = data.coins;
@@ -2027,6 +2214,38 @@
                     loadUserInventory();
                     loadLeaderboard('global');
                     updateProfileStats();
+                }
+            }
+
+            function updateProfilePicture(avatarUrl) {
+                const profileBtn = document.querySelector('.profile-btn');
+                const profileAvatar = document.querySelector('.profile-avatar');
+                
+                if (avatarUrl) {
+                    // Create image element for profile button
+                    profileBtn.innerHTML = '';
+                    const img1 = document.createElement('img');
+                    img1.src = avatarUrl;
+                    img1.alt = 'Profile';
+                    img1.onerror = function() {
+                        this.src = '';
+                        profileBtn.innerHTML = '<i class="fas fa-user"></i>';
+                    };
+                    profileBtn.appendChild(img1);
+                    
+                    // Create image element for profile tab
+                    profileAvatar.innerHTML = '';
+                    const img2 = document.createElement('img');
+                    img2.src = avatarUrl;
+                    img2.alt = 'Profile';
+                    img2.onerror = function() {
+                        this.src = '';
+                        profileAvatar.innerHTML = '<i class="fas fa-user"></i>';
+                    };
+                    profileAvatar.appendChild(img2);
+                } else {
+                    profileBtn.innerHTML = '<i class="fas fa-user"></i>';
+                    profileAvatar.innerHTML = '<i class="fas fa-user"></i>';
                 }
             }
 
@@ -2092,8 +2311,10 @@
             // LOCATION & GEOFENCING FUNCTIONS
             // ============================================
             
-            async function requestLocationPermission() {
+            function requestLocationPermission() {
                 console.log('Requesting location permission...');
+                document.getElementById('location-permission').style.display = 'block';
+                
                 if ('geolocation' in navigator) {
                     navigator.geolocation.getCurrentPosition(
                         (position) => {
@@ -2103,73 +2324,52 @@
                                 accuracy: position.coords.accuracy
                             };
                             console.log('Location obtained:', userLocation);
-                            updateMapLocation();
+                            document.getElementById('location-permission').style.display = 'none';
+                            updateUserLocationOnMap();
+                            checkZones();
                             startGeofencing();
                         },
                         (error) => {
                             console.warn('Location permission denied:', error);
-                            showToast('Location access is required for full functionality. Please enable location services.', 'error');
-                            // Use default location (Swakopmund)
+                            document.getElementById('location-permission').innerHTML = `
+                                <p>Location access is required for full functionality.</p>
+                                <button id="request-location-btn">Enable Location</button>
+                                <p style="margin-top: 12px; font-size: 12px; color: var(--text-secondary);">
+                                    You can still use the app, but zones and missions won't work properly.
+                                </p>
+                            `;
+                            document.getElementById('request-location-btn').addEventListener('click', requestLocationPermission);
+                            
+                            // Use default location for testing
                             userLocation = { lat: -22.68, lng: 17.08, accuracy: 10000 };
-                            updateMapLocation();
+                            showToast('Using default location. Enable location for accurate zone detection.', 'warning');
                         },
                         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                     );
                     
                     // Watch position for real-time updates
-                    const watchId = navigator.geolocation.watchPosition(
+                    window.geoWatchId = navigator.geolocation.watchPosition(
                         (position) => {
                             userLocation = {
                                 lat: position.coords.latitude,
                                 lng: position.coords.longitude,
                                 accuracy: position.coords.accuracy
                             };
-                            updateMapLocation();
+                            updateUserLocationOnMap();
                             checkZones();
                         },
                         (error) => console.error('Location watch error:', error),
                         { enableHighAccuracy: true, maximumAge: 30000, timeout: 5000 }
                     );
-                    
-                    // Store watch ID for cleanup
-                    window.geoWatchId = watchId;
                 } else {
                     console.warn('Geolocation not supported');
+                    document.getElementById('location-permission').innerHTML = `
+                        <p>Geolocation is not supported in your browser.</p>
+                        <p style="margin-top: 12px; font-size: 12px; color: var(--text-secondary);">
+                            You can still use the app, but zones and missions won't work properly.
+                        </p>
+                    `;
                     userLocation = { lat: -22.68, lng: 17.08, accuracy: 10000 };
-                    updateMapLocation();
-                }
-            }
-
-            function updateMapLocation() {
-                if (userLocation && map) {
-                    console.log('Updating map location:', userLocation);
-                    // Center map on user
-                    map.flyTo({
-                        center: [userLocation.lng, userLocation.lat],
-                        zoom: 15,
-                        essential: true,
-                        duration: 1000
-                    });
-                    
-                    // Remove existing user marker
-                    const existingMarkers = document.getElementsByClassName('user-marker');
-                    while (existingMarkers.length > 0) {
-                        existingMarkers[0].remove();
-                    }
-                    
-                    // Add new user marker
-                    const el = document.createElement('div');
-                    el.className = 'user-marker';
-                    el.style.width = '20px';
-                    el.style.height = '20px';
-                    el.style.backgroundColor = 'var(--primary)';
-                    el.style.borderRadius = '50%';
-                    el.style.border = '3px solid var(--background)';
-                    el.style.boxShadow = '0 0 10px rgba(255, 255, 255, 0.5)';
-                    
-                    new mapboxgl.Marker(el)
-                        .setLngLat([userLocation.lng, userLocation.lat])
-                        .addTo(map);
                 }
             }
 
@@ -2181,51 +2381,38 @@
             }
 
             async function checkZones() {
-                if (!userLocation) {
-                    console.log('No location available for zone check');
+                if (!userLocation || !zones.length) {
+                    console.log('No location or zones available for zone check');
                     return;
                 }
                 
                 console.log('Checking zones...');
-                const { data: zones, error } = await supabase
-                    .from('zones')
-                    .select('*')
-                    .eq('is_active', true);
-                
-                if (error) {
-                    console.error('Error loading zones:', error);
-                    return;
-                }
-                
                 let currentZoneFound = null;
                 
-                if (zones && zones.length > 0) {
-                    zones.forEach(zone => {
-                        if (!zone.coordinates || !zone.coordinates.lat || !zone.coordinates.lng) {
-                            console.warn('Zone missing coordinates:', zone.name);
-                            return;
+                zones.forEach(zone => {
+                    if (!zone.coordinates || !zone.coordinates.lat || !zone.coordinates.lng) {
+                        return;
+                    }
+                    
+                    const distance = getDistance(
+                        userLocation.lat,
+                        userLocation.lng,
+                        zone.coordinates.lat,
+                        zone.coordinates.lng
+                    );
+                    
+                    console.log(`Distance to ${zone.name}: ${distance}m (radius: ${zone.radius_meters || 100}m)`);
+                    
+                    if (distance <= (zone.radius_meters || 100)) {
+                        if (currentZone?.id !== zone.id) {
+                            // Entered new zone
+                            console.log(`Entered zone: ${zone.name}`);
+                            unlockZoneMissions(zone.id);
+                            showToast(`Entered ${zone.name}! Missions unlocked.`, 'success');
+                            currentZoneFound = zone;
                         }
-                        
-                        const distance = getDistance(
-                            userLocation.lat,
-                            userLocation.lng,
-                            zone.coordinates.lat,
-                            zone.coordinates.lng
-                        );
-                        
-                        console.log(`Distance to ${zone.name}: ${distance}m (radius: ${zone.radius_meters || 100}m)`);
-                        
-                        if (distance <= (zone.radius_meters || 100)) {
-                            if (currentZone?.id !== zone.id) {
-                                // Entered new zone
-                                console.log(`Entered zone: ${zone.name}`);
-                                unlockZoneMissions(zone.id);
-                                showToast(`Entered ${zone.name}! Missions unlocked.`, 'success');
-                                currentZoneFound = zone;
-                            }
-                        }
-                    });
-                }
+                    }
+                });
                 
                 currentZone = currentZoneFound;
                 updateCurrentZoneDisplay();
@@ -2252,7 +2439,7 @@
                     zoneElement.innerHTML = `
                         <h4 style="margin-bottom: 8px; color: var(--primary); font-size: 16px;">${currentZone.name}</h4>
                         <p style="color: var(--text-secondary); font-size: 13px;">
-                            Complete missions in this area to earn coins!
+                            ${currentZone.description || 'Complete missions in this area to earn coins!'}
                         </p>
                     `;
                 } else {
@@ -2268,6 +2455,8 @@
             
             async function unlockZoneMissions(zoneId) {
                 console.log(`Unlocking missions for zone: ${zoneId}`);
+                if (!currentUser) return;
+                
                 const { data: missions, error } = await supabase
                     .from('missions')
                     .select('*')
@@ -2281,7 +2470,7 @@
                 
                 console.log(`Found ${missions.length} missions in zone`);
                 
-                if (missions.length > 0 && currentUser) {
+                if (missions.length > 0) {
                     for (const mission of missions) {
                         // Check if user mission already exists
                         const { data: existing } = await supabase
@@ -2296,12 +2485,15 @@
                             console.log(`Creating user mission for: ${mission.title}`);
                             const { error: insertError } = await supabase
                                 .from('user_missions')
-                                .insert([{
+                                .upsert([{
                                     user_id: currentUser.id,
                                     mission_id: mission.id,
                                     status: 'unlocked',
-                                    created_at: new Date().toISOString()
-                                }]);
+                                    created_at: new Date().toISOString(),
+                                    updated_at: new Date().toISOString()
+                                }], {
+                                    onConflict: 'user_id,mission_id'
+                                });
                             
                             if (insertError) {
                                 console.error('Error creating user mission:', insertError);
@@ -2311,7 +2503,10 @@
                             console.log(`Unlocking existing mission: ${mission.title}`);
                             await supabase
                                 .from('user_missions')
-                                .update({ status: 'unlocked' })
+                                .update({ 
+                                    status: 'unlocked',
+                                    updated_at: new Date().toISOString()
+                                })
                                 .eq('id', existing.id);
                         }
                     }
@@ -2325,24 +2520,31 @@
 
             async function loadZones() {
                 console.log('Loading zones...');
-                const { data: zones, error } = await supabase
+                const { data: zonesData, error } = await supabase
                     .from('zones')
                     .select('*')
                     .eq('is_active', true)
                     .order('name');
                 
                 const zoneList = document.getElementById('zone-list');
-                zoneList.innerHTML = '';
                 
-                if (error || !zones || zones.length === 0) {
+                if (error) {
+                    console.error('Error loading zones:', error);
+                    zoneList.innerHTML = '<p style="color: var(--text-secondary); padding: 20px; text-align: center; font-size: 13px;">Error loading zones.</p>';
+                    return;
+                }
+                
+                if (!zonesData || zonesData.length === 0) {
                     zoneList.innerHTML = '<p style="color: var(--text-secondary); padding: 20px; text-align: center; font-size: 13px;">No zones available yet.</p>';
                     console.log('No zones found');
                     return;
                 }
                 
-                console.log(`Loaded ${zones.length} zones`);
+                console.log(`Loaded ${zonesData.length} zones`);
+                zones = zonesData;
                 
-                zones.forEach((zone, index) => {
+                zoneList.innerHTML = '';
+                zonesData.forEach((zone, index) => {
                     const zoneEl = document.createElement('div');
                     zoneEl.className = 'zone-item';
                     if (index === 0) zoneEl.classList.add('active');
@@ -2356,13 +2558,16 @@
                 });
                 
                 // Load missions for first zone
-                if (zones.length > 0) {
-                    loadMissionsForZone(zones[0].id);
+                if (zonesData.length > 0) {
+                    loadMissionsForZone(zonesData[0].id);
                 }
             }
 
             async function loadMissionsForZone(zoneId) {
                 console.log(`Loading missions for zone: ${zoneId}`);
+                const missionsList = document.getElementById('missions-list');
+                missionsList.innerHTML = '<div class="spinner" style="margin: 40px auto;"></div>';
+                
                 const { data: missions, error } = await supabase
                     .from('missions')
                     .select(`
@@ -2377,10 +2582,18 @@
                     .eq('status', 'active')
                     .order('created_at');
                 
-                const missionsList = document.getElementById('missions-list');
-                missionsList.innerHTML = '';
+                if (error) {
+                    console.error('Error loading missions:', error);
+                    missionsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Error loading missions.</p>
+                        </div>
+                    `;
+                    return;
+                }
                 
-                if (error || !missions || missions.length === 0) {
+                if (!missions || missions.length === 0) {
                     missionsList.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-map-marker-alt"></i>
@@ -2392,6 +2605,7 @@
                 }
                 
                 console.log(`Loaded ${missions.length} missions`);
+                missionsList.innerHTML = '';
                 
                 missions.forEach(mission => {
                     const userMission = mission.user_missions?.[0];
@@ -2443,369 +2657,8 @@
 
             async function startMission(missionId) {
                 console.log(`Starting mission: ${missionId}`);
-                const { data: mission, error } = await supabase
-                    .from('missions')
-                    .select('*')
-                    .eq('id', missionId)
-                    .single();
-                
-                if (error || !mission) {
-                    showToast('Mission not found', 'error');
-                    return;
-                }
-                
-                currentMission = mission;
-                console.log('Mission loaded:', mission.title);
-                
-                // Update modal content
-                document.getElementById('mission-modal-title').textContent = mission.title;
-                document.getElementById('mission-modal-question').textContent = mission.question || 'Complete this mission';
-                
-                // Show modal
-                document.getElementById('media-modal').style.display = 'flex';
-                initMediaCapture();
-            }
-
-            // ============================================
-            // MEDIA CAPTURE FUNCTIONS
-            // ============================================
-            
-            function initMediaCapture() {
-                console.log('Initializing media capture');
-                // Reset all previews
-                document.getElementById('video-preview').style.display = 'block';
-                document.getElementById('audio-visualizer').style.display = 'none';
-                document.getElementById('image-preview').style.display = 'none';
-                document.getElementById('recording-indicator').style.display = 'none';
-                document.getElementById('media-timer').style.display = 'none';
-                
-                // Reset recording state
-                recordedChunks = [];
-                recordingSeconds = 0;
-                clearInterval(recordingTimer);
-                
-                // Get camera access
-                navigator.mediaDevices.getUserMedia({ 
-                    video: true, 
-                    audio: true 
-                }).then(stream => {
-                    videoStream = stream;
-                    const video = document.getElementById('video-preview');
-                    video.srcObject = stream;
-                    console.log('Camera access granted');
-                }).catch(err => {
-                    console.error('Camera access error:', err);
-                    showToast('Camera access is required for missions. Please allow camera access.', 'error');
-                });
-            }
-
-            function capturePhoto() {
-                console.log('Capturing photo');
-                const video = document.getElementById('video-preview');
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0);
-                
-                canvas.toBlob(async (blob) => {
-                    console.log('Photo captured, size:', blob.size);
-                    await submitMissionMedia(blob, 'image');
-                }, 'image/jpeg', 0.9);
-            }
-
-            function toggleVideoRecording() {
-                console.log('Toggle video recording');
-                const recordBtn = document.getElementById('record-video-btn');
-                
-                if (mediaRecorder && mediaRecorder.state === 'recording') {
-                    // Stop recording
-                    console.log('Stopping video recording');
-                    mediaRecorder.stop();
-                    recordBtn.innerHTML = '<i class="fas fa-video"></i> Record Video';
-                    
-                    // Hide recording indicator
-                    document.getElementById('recording-indicator').style.display = 'none';
-                    document.getElementById('media-timer').style.display = 'none';
-                    clearInterval(recordingTimer);
-                } else {
-                    // Start recording
-                    console.log('Starting video recording');
-                    const stream = document.getElementById('video-preview').srcObject;
-                    recordedChunks = [];
-                    
-                    const options = { mimeType: 'video/webm;codecs=vp9,opus' };
-                    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                        options.mimeType = 'video/webm;codecs=vp8,opus';
-                    }
-                    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                        options.mimeType = 'video/webm';
-                    }
-                    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                        options.mimeType = 'video/mp4';
-                    }
-                    
-                    try {
-                        mediaRecorder = new MediaRecorder(stream, options);
-                        
-                        mediaRecorder.ondataavailable = (event) => {
-                            if (event.data.size > 0) {
-                                recordedChunks.push(event.data);
-                            }
-                        };
-                        
-                        mediaRecorder.onstop = async () => {
-                            console.log('Video recording stopped, processing...');
-                            const blob = new Blob(recordedChunks, { type: options.mimeType });
-                            await submitMissionMedia(blob, 'video');
-                        };
-                        
-                        mediaRecorder.start();
-                        recordBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Recording';
-                        
-                        // Show recording indicator
-                        document.getElementById('recording-indicator').style.display = 'flex';
-                        document.getElementById('media-timer').style.display = 'block';
-                        
-                        // Start timer
-                        recordingSeconds = 0;
-                        recordingTimer = setInterval(() => {
-                            recordingSeconds++;
-                            const minutes = Math.floor(recordingSeconds / 60);
-                            const seconds = recordingSeconds % 60;
-                            document.getElementById('media-timer').textContent = 
-                                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                        }, 1000);
-                    } catch (e) {
-                        console.error('MediaRecorder error:', e);
-                        showToast('Video recording not supported on this device', 'error');
-                    }
-                }
-            }
-
-            function toggleAudioRecording() {
-                console.log('Toggle audio recording');
-                const audioBtn = document.getElementById('record-audio-btn');
-                
-                if (audioRecorder && audioRecorder.state === 'recording') {
-                    // Stop recording
-                    console.log('Stopping audio recording');
-                    audioRecorder.stop();
-                    audioBtn.innerHTML = '<i class="fas fa-microphone"></i> Record Audio';
-                    
-                    // Hide recording indicator
-                    document.getElementById('recording-indicator').style.display = 'none';
-                    document.getElementById('media-timer').style.display = 'none';
-                    clearInterval(recordingTimer);
-                    
-                    // Stop audio stream
-                    if (audioStream) {
-                        audioStream.getTracks().forEach(track => track.stop());
-                    }
-                } else {
-                    // Start audio recording
-                    console.log('Starting audio recording');
-                    navigator.mediaDevices.getUserMedia({ audio: true })
-                        .then(stream => {
-                            audioStream = stream;
-                            const options = { mimeType: 'audio/webm;codecs=opus' };
-                            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                                options.mimeType = 'audio/webm';
-                            }
-                            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-                                options.mimeType = 'audio/mp4';
-                            }
-                            
-                            audioRecorder = new MediaRecorder(stream, options);
-                            recordedChunks = [];
-                            
-                            audioRecorder.ondataavailable = (event) => {
-                                if (event.data.size > 0) {
-                                    recordedChunks.push(event.data);
-                                }
-                            };
-                            
-                            audioRecorder.onstop = async () => {
-                                console.log('Audio recording stopped, processing...');
-                                const blob = new Blob(recordedChunks, { type: options.mimeType });
-                                await submitMissionMedia(blob, 'audio');
-                            };
-                            
-                            audioRecorder.start();
-                            audioBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Audio';
-                            
-                            // Show recording indicator
-                            document.getElementById('recording-indicator').style.display = 'flex';
-                            document.getElementById('media-timer').style.display = 'block';
-                            
-                            // Show audio visualizer
-                            showAudioVisualizer(stream);
-                            
-                            // Start timer
-                            recordingSeconds = 0;
-                            recordingTimer = setInterval(() => {
-                                recordingSeconds++;
-                                const minutes = Math.floor(recordingSeconds / 60);
-                                const seconds = recordingSeconds % 60;
-                                document.getElementById('media-timer').textContent = 
-                                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                            }, 1000);
-                        })
-                        .catch(err => {
-                            console.error('Audio access error:', err);
-                            showToast('Microphone access is required', 'error');
-                        });
-                }
-            }
-
-            function showAudioVisualizer(stream) {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const source = audioCtx.createMediaStreamSource(stream);
-                const analyser = audioCtx.createAnalyser();
-                source.connect(analyser);
-                
-                const canvas = document.getElementById('audio-visualizer');
-                canvas.style.display = 'block';
-                canvas.width = canvas.offsetWidth;
-                canvas.height = canvas.offsetHeight;
-                const ctx = canvas.getContext('2d');
-                
-                document.getElementById('video-preview').style.display = 'none';
-                
-                function draw() {
-                    if (audioRecorder && audioRecorder.state === 'recording') {
-                        requestAnimationFrame(draw);
-                    }
-                    
-                    const dataArray = new Uint8Array(analyser.frequencyBinCount);
-                    analyser.getByteFrequencyData(dataArray);
-                    
-                    ctx.fillStyle = 'rgb(0, 0, 0)';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    
-                    const barWidth = (canvas.width / dataArray.length) * 2.5;
-                    let x = 0;
-                    
-                    for (let i = 0; i < dataArray.length; i++) {
-                        const barHeight = dataArray[i] / 2;
-                        
-                        ctx.fillStyle = `rgb(255, 255, 255)`;
-                        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-                        
-                        x += barWidth + 1;
-                    }
-                }
-                
-                draw();
-            }
-
-            async function submitMissionMedia(blob, mediaType) {
-                if (!currentMission || !currentUser) {
-                    showToast('Unable to submit mission', 'error');
-                    return;
-                }
-                
-                closeMediaModal();
-                showToast('Uploading submission...', 'info');
-                
-                try {
-                    // 1. Upload to Supabase Storage
-                    const fileExt = mediaType === 'image' ? 'jpg' : mediaType === 'video' ? 'webm' : 'webm';
-                    const fileName = `${currentUser.id}/${currentMission.id}/${Date.now()}.${fileExt}`;
-                    
-                    console.log('Uploading media to storage:', fileName);
-                    const { error: uploadError } = await supabase.storage
-                        .from('submissions')
-                        .upload(fileName, blob, {
-                            cacheControl: '3600',
-                            upsert: false
-                        });
-                    
-                    if (uploadError) throw new Error('Upload failed: ' + uploadError.message);
-                    
-                    // 2. Get public URL
-                    const { data: urlData } = supabase.storage
-                        .from('submissions')
-                        .getPublicUrl(fileName);
-                    
-                    // 3. Create submission record
-                    const { error: submissionError } = await supabase
-                        .from('submissions')
-                        .insert([{
-                            user_id: currentUser.id,
-                            mission_id: currentMission.id,
-                            media_url: urlData.publicUrl,
-                            media_type: mediaType,
-                            status: 'pending',
-                            gps_lat: userLocation?.lat || -22.68,
-                            gps_lng: userLocation?.lng || 17.08,
-                            gps_confidence: userLocation ? Math.max(0, 100 - (userLocation.accuracy || 0)) : 0,
-                            created_at: new Date().toISOString()
-                        }]);
-                    
-                    if (submissionError) throw new Error('Submission failed: ' + submissionError.message);
-                    
-                    // 4. Update user mission status to pending
-                    const { error: missionError } = await supabase
-                        .from('user_missions')
-                        .update({ 
-                            status: 'pending',
-                            submitted_at: new Date().toISOString()
-                        })
-                        .eq('user_id', currentUser.id)
-                        .eq('mission_id', currentMission.id);
-                    
-                    if (missionError) throw new Error('Mission update failed: ' + missionError.message);
-                    
-                    showToast('Submission sent for verification! You will receive coins once approved.', 'success');
-                    
-                    // Reload missions
-                    if (currentZone) {
-                        loadMissionsForZone(currentZone.id);
-                    }
-                    
-                    currentMission = null;
-                    
-                } catch (error) {
-                    console.error('Submission error:', error);
-                    showToast(error.message, 'error');
-                }
-            }
-
-            function closeMediaModal() {
-                console.log('Closing media modal');
-                document.getElementById('media-modal').style.display = 'none';
-                
-                // Stop all media streams
-                if (videoStream) {
-                    videoStream.getTracks().forEach(track => track.stop());
-                    videoStream = null;
-                }
-                
-                if (audioStream) {
-                    audioStream.getTracks().forEach(track => track.stop());
-                    audioStream = null;
-                }
-                
-                if (mediaRecorder && mediaRecorder.state === 'recording') {
-                    mediaRecorder.stop();
-                }
-                
-                if (audioRecorder && audioRecorder.state === 'recording') {
-                    audioRecorder.stop();
-                }
-                
-                // Clear timer
-                clearInterval(recordingTimer);
-                
-                // Reset preview
-                const video = document.getElementById('video-preview');
-                if (video.srcObject) {
-                    video.srcObject.getTracks().forEach(track => track.stop());
-                }
-                video.srcObject = null;
-                document.getElementById('image-preview').style.display = 'none';
-                document.getElementById('audio-visualizer').style.display = 'none';
+                showToast('Mission functionality coming soon!', 'info');
+                // Mission media capture will be implemented later
             }
 
             // ============================================
@@ -2821,9 +2674,19 @@
                     .order('price');
                 
                 const prizeGrid = document.getElementById('prize-grid');
-                prizeGrid.innerHTML = '';
                 
-                if (error || !prizes || prizes.length === 0) {
+                if (error) {
+                    console.error('Error loading prizes:', error);
+                    prizeGrid.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1 / -1;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Error loading prizes.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                if (!prizes || prizes.length === 0) {
                     prizeGrid.innerHTML = `
                         <div class="empty-state" style="grid-column: 1 / -1;">
                             <i class="fas fa-gift"></i>
@@ -2835,6 +2698,7 @@
                 }
                 
                 console.log(`Loaded ${prizes.length} prizes`);
+                prizeGrid.innerHTML = '';
                 
                 prizes.forEach(prize => {
                     const isSoldOut = prize.remaining_quantity <= 0;
@@ -2907,120 +2771,7 @@
 
             async function showPurchaseModal(prizeId) {
                 console.log('Showing purchase modal for prize:', prizeId);
-                const { data: prize, error } = await supabase
-                    .from('prizes')
-                    .select('*')
-                    .eq('id', prizeId)
-                    .single();
-                
-                if (error || !prize) {
-                    showToast('Prize not found', 'error');
-                    return;
-                }
-                
-                selectedPrize = prize;
-                console.log('Prize selected:', prize.name);
-                
-                // Update modal content
-                document.getElementById('purchase-title').textContent = prize.name;
-                document.getElementById('purchase-description').textContent = prize.description || 'No description available';
-                document.getElementById('purchase-price').textContent = prize.price;
-                
-                // Show modal
-                document.getElementById('purchase-modal').style.display = 'flex';
-            }
-
-            async function confirmPurchase() {
-                if (!selectedPrize || !currentUser) return;
-                
-                console.log('Confirming purchase:', selectedPrize.name);
-                
-                if (currentUser.coins < selectedPrize.price) {
-                    showToast(`Insufficient coins. You need ${selectedPrize.price - currentUser.coins} more coins.`, 'error');
-                    closePurchaseModal();
-                    return;
-                }
-                
-                if (selectedPrize.remaining_quantity <= 0) {
-                    showToast('This prize is sold out!', 'error');
-                    closePurchaseModal();
-                    return;
-                }
-                
-                showToast('Processing purchase...', 'info');
-                
-                try {
-                    // 1. Create purchase record
-                    const { error: purchaseError } = await supabase
-                        .from('purchases')
-                        .insert([{
-                            user_id: currentUser.id,
-                            prize_id: selectedPrize.id,
-                            item_name: selectedPrize.name,
-                            item_image: selectedPrize.image_url,
-                            price: selectedPrize.price,
-                            status: 'ordered',
-                            purchased_at: new Date().toISOString()
-                        }]);
-                    
-                    if (purchaseError) throw new Error('Purchase failed: ' + purchaseError.message);
-                    
-                    // 2. Deduct coins from user
-                    const newCoins = currentUser.coins - selectedPrize.price;
-                    const { error: coinsError } = await supabase
-                        .from('users')
-                        .update({ coins: newCoins })
-                        .eq('id', currentUser.id);
-                    
-                    if (coinsError) throw new Error('Coin deduction failed: ' + coinsError.message);
-                    
-                    // 3. Update prize inventory
-                    const newQuantity = selectedPrize.remaining_quantity - 1;
-                    const { error: inventoryError } = await supabase
-                        .from('prizes')
-                        .update({ remaining_quantity: newQuantity })
-                        .eq('id', selectedPrize.id);
-                    
-                    if (inventoryError) throw new Error('Inventory update failed: ' + inventoryError.message);
-                    
-                    // 4. Add to user inventory
-                    const { error: inventoryInsertError } = await supabase
-                        .from('user_inventory')
-                        .insert([{
-                            user_id: currentUser.id,
-                            item_name: selectedPrize.name,
-                            item_image: selectedPrize.image_url,
-                            status: 'active',
-                            acquired_at: new Date().toISOString(),
-                            notes: 'Purchased from shop'
-                        }]);
-                    
-                    if (inventoryInsertError) throw new Error('Inventory insert failed: ' + inventoryInsertError.message);
-                    
-                    // 5. Update local state
-                    currentUser.coins = newCoins;
-                    document.getElementById('user-coins').textContent = newCoins;
-                    document.getElementById('shop-coins').textContent = newCoins;
-                    document.getElementById('profile-coins').textContent = newCoins;
-                    
-                    showToast('Purchase successful! Check your inventory.', 'success');
-                    
-                    // Refresh data
-                    loadShopItems();
-                    loadUserInventory();
-                    
-                } catch (error) {
-                    console.error('Purchase error:', error);
-                    showToast(error.message, 'error');
-                }
-                
-                closePurchaseModal();
-            }
-
-            function closePurchaseModal() {
-                console.log('Closing purchase modal');
-                document.getElementById('purchase-modal').style.display = 'none';
-                selectedPrize = null;
+                showToast('Purchase functionality coming soon!', 'info');
             }
 
             // ============================================
@@ -3038,9 +2789,19 @@
                     .order('acquired_at', { ascending: false });
                 
                 const inventoryContainer = document.getElementById('inventory-items');
-                inventoryContainer.innerHTML = '';
                 
-                if (error || !inventory || inventory.length === 0) {
+                if (error) {
+                    console.error('Error loading inventory:', error);
+                    inventoryContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Error loading inventory.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                if (!inventory || inventory.length === 0) {
                     inventoryContainer.innerHTML = `
                         <div class="empty-state">
                             <i class="fas fa-box-open"></i>
@@ -3053,6 +2814,7 @@
                 }
                 
                 console.log(`Loaded ${inventory.length} inventory items`);
+                inventoryContainer.innerHTML = '';
                 
                 inventory.forEach(item => {
                     const itemElement = document.createElement('div');
@@ -3111,36 +2873,21 @@
                 try {
                     let leaderboardData = [];
                     
-                    if (type === 'global') {
-                        // Get top 50 users by coins
-                        const { data: users, error } = await supabase
-                            .from('users')
-                            .select('id, name, avatar_url, coins')
-                            .order('coins', { ascending: false })
-                            .limit(50);
-                        
-                        if (!error && users) {
-                            leaderboardData = users.map((user, index) => ({
-                                rank: index + 1,
-                                ...user,
-                                score: user.coins
-                            }));
-                        }
-                    } else {
-                        // For now, use global for all types
-                        const { data: users, error } = await supabase
-                            .from('users')
-                            .select('id, name, avatar_url, coins')
-                            .order('coins', { ascending: false })
-                            .limit(50);
-                        
-                        if (!error && users) {
-                            leaderboardData = users.map((user, index) => ({
-                                rank: index + 1,
-                                ...user,
-                                score: user.coins
-                            }));
-                        }
+                    // Get top 50 users by coins
+                    const { data: users, error } = await supabase
+                        .from('users')
+                        .select('id, name, avatar_url, coins')
+                        .order('coins', { ascending: false })
+                        .limit(50);
+                    
+                    if (error) throw error;
+                    
+                    if (users) {
+                        leaderboardData = users.map((user, index) => ({
+                            rank: index + 1,
+                            ...user,
+                            score: user.coins
+                        }));
                     }
                     
                     console.log(`Loaded ${leaderboardData.length} leaderboard entries`);
@@ -3202,7 +2949,13 @@
                     
                 } catch (error) {
                     console.error('Error loading leaderboard:', error);
-                    showToast('Failed to load leaderboard', 'error');
+                    myRankCard.innerHTML = '<div style="text-align:center;width:100%;padding:20px;"><p style="color:var(--text-secondary);">Error loading leaderboard</p></div>';
+                    leaderboardList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Error loading leaderboard data.</p>
+                        </div>
+                    `;
                 }
             }
 
@@ -3323,6 +3076,11 @@
                 showToast('Activity history coming soon!', 'info');
             }
 
+            function showEmergencyModal() {
+                console.log('Showing emergency modal');
+                showToast('Emergency functionality coming soon!', 'info');
+            }
+
             async function logout() {
                 console.log('Logging out...');
                 // Stop geolocation watching
@@ -3339,52 +3097,6 @@
                     showLogin();
                     showToast('Logged out successfully', 'success');
                 }
-            }
-
-            // ============================================
-            // EMERGENCY FUNCTIONS
-            // ============================================
-            
-            function showEmergencyModal() {
-                console.log('Showing emergency modal');
-                document.getElementById('emergency-modal').style.display = 'flex';
-            }
-
-            function closeEmergencyModal() {
-                console.log('Closing emergency modal');
-                document.getElementById('emergency-modal').style.display = 'none';
-            }
-
-            async function callAmbulance() {
-                console.log('Calling ambulance');
-                // Send emergency alert
-                if (currentUser && userLocation) {
-                    try {
-                        await supabase
-                            .from('emergency_alerts')
-                            .insert([{
-                                user_id: currentUser.id,
-                                user_name: currentUser.name,
-                                user_phone: currentUser.phone,
-                                latitude: userLocation.lat,
-                                longitude: userLocation.lng,
-                                status: 'active',
-                                created_at: new Date().toISOString()
-                            }]);
-                    } catch (error) {
-                        console.error('Error sending emergency alert:', error);
-                    }
-                }
-                
-                // Call ambulance
-                window.location.href = EMERGENCY_NUMBERS.ambulance;
-                closeEmergencyModal();
-            }
-
-            function callTollFree() {
-                console.log('Calling toll-free');
-                window.location.href = EMERGENCY_NUMBERS.tollFree;
-                closeEmergencyModal();
             }
 
             console.log('App initialization complete!');
