@@ -10,7 +10,7 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
     <style>
-        /* Professional Black/White/Grey Theme */
+        /* Professional Black/White/Grey Theme - FIXED CONTAINMENT */
         :root {
             --primary: #ffffff;
             --primary-dark: #cccccc;
@@ -33,23 +33,40 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--background);
             color: var(--text);
-            overflow-x: hidden;
-            min-height: 100vh;
-            padding-bottom: env(safe-area-inset-bottom);
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Auth Screens */
+        /* Auth Screens - PROPERLY CONTAINED */
         .auth-screen {
-            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--background);
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            background: linear-gradient(135deg, var(--background) 0%, #1a1a1a 100%);
+            z-index: 10000;
+            overflow-y: auto;
         }
 
         .auth-container {
@@ -60,6 +77,7 @@
             padding: 40px 30px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border);
+            margin: auto;
         }
 
         .logo {
@@ -187,12 +205,18 @@
             line-height: 1.4;
         }
 
-        /* Main App */
+        /* Main App - PROPER CONTAINMENT */
         .app-container {
             display: none;
+            flex: 1;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
         }
 
-        /* Header */
+        /* Header - FIXED POSITION */
         .header {
             position: fixed;
             top: 0;
@@ -207,12 +231,15 @@
             justify-content: space-between;
             padding: 0 16px;
             z-index: 1000;
+            flex-shrink: 0;
         }
 
         .header-left {
             display: flex;
             align-items: center;
             gap: 12px;
+            flex: 1;
+            min-width: 0;
         }
 
         .profile-btn {
@@ -227,6 +254,7 @@
             align-items: center;
             justify-content: center;
             color: var(--text-secondary);
+            flex-shrink: 0;
         }
 
         .profile-btn img {
@@ -247,9 +275,22 @@
             font-size: 0.9rem;
             letter-spacing: 1px;
             border: 1px solid var(--border);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-shrink: 0;
         }
 
-        /* SOS Button */
+        .coins-display {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        /* SOS Button - FIXED POSITION */
         .sos-btn {
             position: fixed;
             bottom: 100px;
@@ -268,6 +309,7 @@
             z-index: 900;
             border: none;
             animation: pulse 2s infinite;
+            flex-shrink: 0;
         }
 
         @keyframes pulse {
@@ -276,12 +318,45 @@
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
         }
 
-        /* Map Container */
+        /* Main Content - SCROLLABLE AREA */
+        .main-content {
+            flex: 1;
+            padding: 16px;
+            padding-top: 80px;
+            padding-bottom: 70px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Tab Containers - PROPER CONTAINMENT */
+        .tab-container {
+            display: none;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .tab-container.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Map Container - FIXED HEIGHT */
         .map-container {
-            margin-top: 64px;
             height: 50vh;
             width: 100%;
             position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
         }
 
         #map {
@@ -305,8 +380,9 @@
             padding: 20px;
             background: var(--card);
             border-radius: 8px;
-            margin: 16px;
+            margin: 16px 0;
             border: 1px solid var(--border);
+            width: 100%;
         }
 
         .location-permission button {
@@ -320,21 +396,7 @@
             font-weight: 600;
         }
 
-        /* Main Content */
-        .main-content {
-            padding: 16px;
-            padding-bottom: 70px;
-        }
-
-        .tab-container {
-            display: none;
-        }
-
-        .tab-container.active {
-            display: block;
-        }
-
-        /* Missions Tab */
+        /* Zone List - SCROLLABLE BUT CONTAINED */
         .zone-list {
             display: flex;
             gap: 8px;
@@ -342,6 +404,12 @@
             padding: 8px 0;
             margin-bottom: 16px;
             -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            width: 100%;
+        }
+
+        .zone-list::-webkit-scrollbar {
+            display: none;
         }
 
         .zone-item {
@@ -363,6 +431,12 @@
             border-color: transparent;
         }
 
+        /* Mission Cards - PROPER CONTAINMENT */
+        .missions-list-container {
+            width: 100%;
+            overflow: hidden;
+        }
+
         .mission-card {
             background: var(--card);
             border-radius: 10px;
@@ -370,6 +444,8 @@
             margin-bottom: 12px;
             border: 1px solid var(--border);
             transition: all 0.2s;
+            width: 100%;
+            overflow: hidden;
         }
 
         .mission-card.completed {
@@ -391,6 +467,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
+            width: 100%;
+            gap: 8px;
         }
 
         .mission-title {
@@ -398,6 +476,9 @@
             font-weight: 600;
             flex: 1;
             color: var(--primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .mission-points {
@@ -407,7 +488,18 @@
             border-radius: 12px;
             font-weight: 600;
             font-size: 0.8rem;
-            margin-left: 8px;
+            flex-shrink: 0;
+        }
+
+        .mission-type-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: rgba(74, 144, 226, 0.2);
+            color: var(--accent);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
 
         .mission-question {
@@ -418,6 +510,8 @@
             padding: 10px;
             background: rgba(255, 255, 255, 0.03);
             border-radius: 6px;
+            width: 100%;
+            overflow-wrap: break-word;
         }
 
         .mission-description {
@@ -425,11 +519,14 @@
             margin-bottom: 12px;
             line-height: 1.5;
             font-size: 13px;
+            width: 100%;
+            overflow-wrap: break-word;
         }
 
         .mission-actions {
             display: flex;
             gap: 8px;
+            width: 100%;
         }
 
         .action-btn {
@@ -447,6 +544,9 @@
             justify-content: center;
             gap: 6px;
             font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .action-btn:hover:not(:disabled) {
@@ -470,57 +570,12 @@
             transform: none !important;
         }
 
-        /* Shop Tab */
-        .shop-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .coins-balance {
-            background: var(--card);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            border: 1px solid var(--border);
-        }
-
-        .shop-categories {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 8px 0;
-            margin-bottom: 16px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .category-btn {
-            flex: 0 0 auto;
-            padding: 8px 16px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-            font-size: 13px;
-        }
-
-        .category-btn.active {
-            background: var(--primary);
-            color: var(--background);
-            border-color: transparent;
-        }
-
+        /* Shop Grid - PROPER GRID */
         .prize-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 12px;
+            width: 100%;
         }
 
         .prize-card {
@@ -529,609 +584,83 @@
             overflow: hidden;
             border: 1px solid var(--border);
             transition: all 0.2s;
-        }
-
-        .prize-card.sold-out {
-            opacity: 0.5;
-            filter: grayscale(1);
-        }
-
-        .prize-image {
             width: 100%;
-            height: 140px;
-            object-fit: cover;
-            background: var(--background);
         }
 
-        .prize-content {
-            padding: 12px;
-        }
-
-        .prize-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 4px;
-            line-height: 1.3;
-            color: var(--primary);
-        }
-
-        .prize-description {
-            color: var(--text-secondary);
-            font-size: 12px;
-            margin-bottom: 8px;
-            line-height: 1.4;
-        }
-
-        .prize-price {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: 600;
-            color: var(--accent);
-            margin-bottom: 4px;
-        }
-
-        .inventory-info {
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-
-        .inventory-info.low-stock {
-            color: var(--warning);
-        }
-
-        .inventory-info.sold-out {
-            color: var(--danger);
-        }
-
-        .buy-btn {
-            width: 100%;
-            padding: 8px;
-            background: var(--primary);
-            border: none;
-            border-radius: 6px;
-            color: var(--background);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 13px;
-        }
-
-        .buy-btn:hover:not(:disabled) {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-        }
-
-        .buy-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background: var(--border);
-            color: var(--text-secondary);
-        }
-
-        /* Inventory Tab */
-        .inventory-filters {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 8px 0;
-            margin-bottom: 16px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .filter-btn {
-            flex: 0 0 auto;
-            padding: 8px 16px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-            font-size: 13px;
-        }
-
-        .filter-btn.active {
-            background: var(--primary);
-            color: var(--background);
-            border-color: transparent;
-        }
-
+        /* Inventory Items */
         .inventory-items {
             display: flex;
             flex-direction: column;
             gap: 12px;
+            width: 100%;
         }
 
-        .inventory-item {
-            background: var(--card);
-            border-radius: 10px;
-            padding: 12px;
-            border: 1px solid var(--border);
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .inventory-item img {
-            width: 56px;
-            height: 56px;
-            border-radius: 8px;
-            object-fit: cover;
-            background: var(--background);
-        }
-
-        .item-info {
-            flex: 1;
-        }
-
-        .item-info h5 {
-            font-size: 14px;
-            margin-bottom: 4px;
-            color: var(--primary);
-        }
-
-        .item-status {
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 12px;
-            display: inline-block;
-            margin-bottom: 4px;
-            font-weight: 600;
-        }
-
-        .status-active {
-            background: rgba(68, 255, 68, 0.15);
-            color: var(--success);
-        }
-
-        .status-used {
-            background: rgba(136, 136, 136, 0.15);
-            color: var(--text-secondary);
-        }
-
-        .item-date {
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 16px;
-            color: var(--text-secondary);
-        }
-
-        .empty-state i {
-            font-size: 40px;
-            margin-bottom: 12px;
-            opacity: 0.3;
-        }
-
-        /* Leaderboard Tab */
-        .leaderboard-filters {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 8px 0;
-            margin-bottom: 16px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .leaderboard-btn {
-            flex: 0 0 auto;
-            padding: 8px 16px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-            font-size: 13px;
-        }
-
-        .leaderboard-btn.active {
-            background: var(--primary);
-            color: var(--background);
-            border-color: transparent;
-        }
-
-        .my-rank-card {
-            background: var(--card);
-            border-radius: 10px;
-            padding: 16px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid var(--border);
-        }
-
-        .my-rank-card img {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 2px solid var(--primary);
-            background: var(--background);
-        }
-
-        .my-rank-info {
-            flex: 1;
-        }
-
-        .my-rank-info h3 {
-            font-size: 18px;
-            margin-bottom: 4px;
-            color: var(--primary);
-        }
-
-        .my-rank-info p {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
+        /* Leaderboard */
         .leaderboard-list {
             display: flex;
             flex-direction: column;
             gap: 8px;
-        }
-
-        .leaderboard-item {
-            background: var(--card);
-            border-radius: 10px;
-            padding: 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid var(--border);
-        }
-
-        .leaderboard-item.my-rank {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--primary);
-        }
-
-        .rank-number {
-            font-size: 16px;
-            font-weight: 600;
-            width: 28px;
-            text-align: center;
-            color: var(--text-secondary);
-        }
-
-        .rank-1 { color: #ffd700; }
-        .rank-2 { color: #c0c0c0; }
-        .rank-3 { color: #cd7f32; }
-
-        .leaderboard-item img {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--background);
-        }
-
-        .leaderboard-info {
-            flex: 1;
-        }
-
-        .leaderboard-info h4 {
-            font-size: 14px;
-            margin-bottom: 2px;
-            color: var(--primary);
-        }
-
-        .leaderboard-info p {
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-
-        .leaderboard-score {
-            font-weight: 600;
-            color: var(--accent);
-        }
-
-        /* Profile Tab */
-        .profile-header {
-            text-align: center;
-            padding: 16px 0;
-        }
-
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 3px solid var(--primary);
-            margin: 0 auto 12px;
-            overflow: hidden;
-            background: var(--card);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-        }
-
-        .profile-avatar img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
 
-        .profile-avatar i {
-            font-size: 40px;
-        }
-
-        .profile-name {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: var(--primary);
-        }
-
-        .profile-email {
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-            font-size: 13px;
-        }
-
+        /* Profile */
         .profile-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
-            margin-bottom: 24px;
+            width: 100%;
         }
 
-        .stat-card {
-            background: var(--card);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-            border: 1px solid var(--border);
+        /* Bottom Navigation - FIXED POSITION */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom);
+            flex-shrink: 0;
         }
 
-        .stat-card h4 {
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .stat-number {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .profile-actions {
+        .nav-item {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-        }
-
-        .profile-action-btn {
-            padding: 12px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-        }
-
-        .profile-action-btn:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--primary);
-        }
-
-        .logout-btn {
-            background: rgba(255, 68, 68, 0.1);
-            border-color: var(--danger);
-            color: #ff8888;
-        }
-
-        /* Media Capture Modal */
-        .media-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 2000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-
-        .media-container {
-            width: 100%;
-            max-width: 480px;
-            background: var(--card);
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            border: 1px solid var(--border);
-        }
-
-        .media-header {
-            padding: 16px;
-            border-bottom: 1px solid var(--border);
-            text-align: center;
-        }
-
-        .media-header h3 {
-            font-size: 18px;
-            margin-bottom: 4px;
-            color: var(--primary);
-        }
-
-        .media-header p {
-            color: var(--text-secondary);
-            font-size: 13px;
-        }
-
-        .media-preview {
-            width: 100%;
-            height: 280px;
-            background: var(--background);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        #video-preview, #audio-visualizer {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .recording-indicator {
-            position: absolute;
-            top: 16px;
-            left: 16px;
-            background: var(--danger);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            display: flex;
             align-items: center;
             gap: 4px;
-            display: none;
-        }
-
-        .recording-indicator .dot {
-            width: 6px;
-            height: 6px;
-            background: white;
-            border-radius: 50%;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        .media-controls {
-            padding: 16px;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-
-        .media-controls button {
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 13px;
-            background: var(--card);
-            color: var(--text);
-        }
-
-        .media-controls button:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--primary);
-        }
-
-        .media-timer {
-            position: absolute;
-            bottom: 16px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            display: none;
-        }
-
-        /* Purchase Modal */
-        .purchase-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 2000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-
-        .purchase-container {
-            width: 100%;
-            max-width: 360px;
-            background: var(--card);
-            border-radius: 12px;
-            padding: 24px;
-            text-align: center;
-            border: 1px solid var(--border);
-        }
-
-        .purchase-container img {
-            width: 140px;
-            height: 140px;
-            border-radius: 10px;
-            object-fit: cover;
-            margin: 0 auto 16px;
-            background: var(--background);
-        }
-
-        .purchase-container h3 {
-            font-size: 20px;
-            margin-bottom: 8px;
-            color: var(--primary);
-        }
-
-        .purchase-container p {
             color: var(--text-secondary);
-            margin-bottom: 16px;
-            line-height: 1.5;
-            font-size: 13px;
-        }
-
-        .purchase-price {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 22px;
-            font-weight: 600;
-            color: var(--accent);
-            margin-bottom: 24px;
-        }
-
-        .purchase-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .purchase-buttons button {
-            flex: 1;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            font-weight: 600;
             cursor: pointer;
-            font-size: 13px;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            min-width: 56px;
+            flex: 1;
+            max-width: 80px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item i {
+            font-size: 18px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
         }
 
         /* Loading Spinner */
@@ -1150,12 +679,27 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Toast Notifications */
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 16px;
+            color: var(--text-secondary);
+            width: 100%;
+        }
+
+        .empty-state i {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.3;
+        }
+
+        /* Toast Notifications - FIXED POSITION */
         .toast-container {
             position: fixed;
             top: 80px;
             right: 16px;
             z-index: 2000;
+            max-width: calc(100% - 32px);
         }
 
         .toast {
@@ -1165,9 +709,12 @@
             padding: 12px;
             margin-bottom: 8px;
             min-width: 280px;
+            max-width: 400px;
             transform: translateX(400px);
             transition: transform 0.3s;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            word-wrap: break-word;
         }
 
         .toast.show {
@@ -1186,8 +733,8 @@
             border-left: 4px solid var(--accent);
         }
 
-        /* Emergency Modal */
-        .emergency-modal {
+        /* Modal Overlays - FIXED FULL SCREEN */
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -1199,114 +746,45 @@
             align-items: center;
             justify-content: center;
             padding: 16px;
+            overflow-y: auto;
         }
 
-        .emergency-container {
+        .modal-container {
             width: 100%;
-            max-width: 360px;
-            background: var(--danger);
+            max-width: 500px;
+            background: var(--card);
             border-radius: 12px;
-            padding: 24px;
-            text-align: center;
-            color: white;
-            animation: emergencyPulse 1s infinite;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid var(--border);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
-        @keyframes emergencyPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
+        /* QR Scanner */
+        .qr-scanner {
+            width: 100%;
+            height: 300px;
+            background: var(--background);
+            position: relative;
+            overflow: hidden;
         }
 
-        .emergency-container i {
-            font-size: 40px;
-            margin-bottom: 16px;
-        }
-
-        .emergency-container h2 {
-            font-size: 20px;
-            margin-bottom: 12px;
-        }
-
-        .emergency-container p {
-            margin-bottom: 16px;
-            line-height: 1.5;
-            opacity: 0.9;
-            font-size: 13px;
-        }
-
-        .emergency-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .emergency-buttons button {
-            padding: 12px;
-            border: 2px solid white;
+        .qr-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 2px solid var(--primary);
             border-radius: 8px;
-            background: transparent;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 13px;
         }
 
-        .emergency-buttons button:hover {
-            background: white;
-            color: var(--danger);
-        }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 64px;
-            background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 1000;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            transition: all 0.2s;
-            min-width: 56px;
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .nav-item i {
-            font-size: 18px;
-        }
-
-        .nav-label {
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        /* Responsive */
+        /* Responsive Adjustments */
         @media (max-width: 768px) {
             .prize-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
             }
             
             .logo h1 {
@@ -1315,6 +793,30 @@
             
             .auth-container {
                 padding: 32px 24px;
+            }
+            
+            .mission-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .mission-title {
+                white-space: normal;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .prize-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .mission-actions {
+                flex-direction: column;
             }
         }
     </style>
@@ -1398,14 +900,14 @@
                 </div>
                 <div class="timer" id="event-timer">24:00:00</div>
             </div>
-            <div class="coins-display" style="display: flex; align-items: center; gap: 5px;">
+            <div class="coins-display">
                 <i class="fas fa-coins" style="color: var(--accent);"></i>
-                <span id="user-coins" style="font-weight: 600;">0</span>
+                <span id="user-coins">0</span>
             </div>
         </div>
 
         <!-- Main Content -->
-        <div class="main-content">
+        <div class="main-content" id="main-content">
             <!-- Map Tab -->
             <div id="map-tab" class="tab-container active">
                 <div class="map-container">
@@ -1420,7 +922,7 @@
                     <p>Location access is required to show zones and missions.</p>
                     <button id="request-location-btn">Enable Location</button>
                 </div>
-                <div style="padding: 16px;">
+                <div>
                     <h2 style="margin-bottom: 12px; font-size: 18px; color: var(--primary);">Current Zone</h2>
                     <div id="current-zone" style="background: var(--card); padding: 12px; border-radius: 8px; margin-bottom: 16px; border: 1px solid var(--border);">
                         <p style="color: var(--text-secondary); font-size: 13px;">Enable location to see zones</p>
@@ -1440,19 +942,21 @@
                 <div class="zone-list" id="zone-list">
                     <div class="spinner" style="margin: 20px auto;"></div>
                 </div>
-                <div id="missions-list">
-                    <div class="empty-state">
-                        <i class="fas fa-tasks"></i>
-                        <p>Select a zone to see missions</p>
+                <div class="missions-list-container">
+                    <div id="missions-list">
+                        <div class="empty-state">
+                            <i class="fas fa-tasks"></i>
+                            <p>Select a zone to see missions</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Shop Tab -->
             <div id="shop-tab" class="tab-container">
-                <div class="shop-header">
+                <div class="shop-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <h2 style="font-size: 18px; color: var(--primary);">Prize Shop</h2>
-                    <div class="coins-balance">
+                    <div class="coins-balance" style="background: var(--card); padding: 8px 16px; border-radius: 20px; font-weight: 600; display: flex; align-items: center; gap: 6px; border: 1px solid var(--border);">
                         <i class="fas fa-coins"></i>
                         <span id="shop-coins">0</span>
                     </div>
@@ -1593,56 +1097,97 @@
     </div>
 
     <!-- Media Capture Modal -->
-    <div id="media-modal" class="media-modal">
-        <div class="media-container">
-            <div class="media-header">
-                <h3 id="mission-modal-title">Complete Mission</h3>
-                <p id="mission-modal-question">Take a photo at the location</p>
+    <div id="media-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="media-header" style="padding: 16px; border-bottom: 1px solid var(--border); text-align: center;">
+                <h3 id="mission-modal-title" style="font-size: 18px; margin-bottom: 4px; color: var(--primary);">Complete Mission</h3>
+                <p id="mission-modal-question" style="color: var(--text-secondary); font-size: 13px;">Take a photo at the location</p>
             </div>
-            <div class="media-preview">
-                <video id="video-preview" autoplay></video>
+            <div class="media-preview" style="width: 100%; height: 300px; background: var(--background); display: flex; align-items: center; justify-content: center; position: relative;">
+                <video id="video-preview" autoplay style="width: 100%; height: 100%; object-fit: cover;"></video>
                 <canvas id="audio-visualizer" style="display: none; width: 100%; height: 100%;"></canvas>
                 <img id="image-preview" style="display: none; max-width: 100%; max-height: 100%;">
-                <div class="recording-indicator" id="recording-indicator">
-                    <div class="dot"></div>
+                <div id="recording-indicator" style="position: absolute; top: 16px; left: 16px; background: var(--danger); color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; display: flex; align-items: center; gap: 4px; display: none;">
+                    <div class="dot" style="width: 6px; height: 6px; background: white; border-radius: 50%; animation: blink 1s infinite;"></div>
                     <span>REC</span>
                 </div>
-                <div class="media-timer" id="media-timer">00:00</div>
+                <div id="media-timer" style="position: absolute; bottom: 16px; left: 0; right: 0; text-align: center; color: white; font-size: 16px; font-weight: 600; display: none;">00:00</div>
             </div>
-            <div class="media-controls">
-                <button id="capture-photo-btn">
-                    <i class="fas fa-camera"></i> Take Photo
-                </button>
-                <button id="record-video-btn">
-                    <i class="fas fa-video"></i> Record Video
-                </button>
-                <button id="record-audio-btn">
-                    <i class="fas fa-microphone"></i> Record Audio
-                </button>
-                <button id="close-media-modal-btn">
+            <div id="media-controls" style="padding: 16px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                <!-- Buttons will be dynamically added based on mission type -->
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Scanner Modal -->
+    <div id="qr-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div style="padding: 16px; border-bottom: 1px solid var(--border); text-align: center;">
+                <h3 style="font-size: 18px; margin-bottom: 4px; color: var(--primary);">Scan QR Code</h3>
+                <p style="color: var(--text-secondary); font-size: 13px;">Point your camera at the QR code</p>
+            </div>
+            <div class="qr-scanner">
+                <video id="qr-video" autoplay style="width: 100%; height: 100%; object-fit: cover;"></video>
+                <div class="qr-overlay"></div>
+            </div>
+            <div style="padding: 16px; display: flex; gap: 8px;">
+                <button id="close-qr-modal" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-weight: 600; cursor: pointer; background: var(--card); color: var(--text);">
                     <i class="fas fa-times"></i> Cancel
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Purchase Modal -->
-    <div id="purchase-modal" class="purchase-modal">
-        <div class="purchase-container">
-            <div style="width: 140px; height: 140px; background: var(--background); border-radius: 10px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
-                <i class="fas fa-gift" style="font-size: 48px;"></i>
+    <!-- Text Answer Modal -->
+    <div id="text-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div style="padding: 16px; border-bottom: 1px solid var(--border); text-align: center;">
+                <h3 id="text-modal-title" style="font-size: 18px; margin-bottom: 4px; color: var(--primary);">Text Answer</h3>
+                <p id="text-modal-question" style="color: var(--text-secondary); font-size: 13px;">Enter your answer below</p>
             </div>
-            <h3 id="purchase-title">Prize Name</h3>
-            <p id="purchase-description">Prize description here</p>
-            <div class="purchase-price">
-                <i class="fas fa-coins"></i>
-                <span id="purchase-price">500</span> coins
+            <div style="padding: 16px;">
+                <textarea id="text-answer-input" style="width: 100%; min-height: 150px; padding: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; resize: vertical;" placeholder="Type your answer here..."></textarea>
             </div>
-            <div class="purchase-buttons">
-                <button id="confirm-purchase-btn" style="background: var(--primary); color: var(--background); border: none;">
-                    <i class="fas fa-shopping-cart"></i> Confirm Purchase
+            <div style="padding: 16px; display: flex; gap: 8px;">
+                <button id="submit-text-answer" style="flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; background: var(--primary); color: var(--background);">
+                    <i class="fas fa-paper-plane"></i> Submit Answer
                 </button>
-                <button id="close-purchase-modal-btn" style="background: var(--card); color: var(--text);">
+                <button id="close-text-modal" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-weight: 600; cursor: pointer; background: var(--card); color: var(--text);">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GPS Check-in Modal -->
+    <div id="gps-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div style="padding: 16px; border-bottom: 1px solid var(--border); text-align: center;">
+                <h3 style="font-size: 18px; margin-bottom: 4px; color: var(--primary);">GPS Check-in</h3>
+                <p id="gps-modal-question" style="color: var(--text-secondary); font-size: 13px;">Check in at the specified location</p>
+            </div>
+            <div style="padding: 16px; text-align: center;">
+                <div id="gps-distance" style="font-size: 48px; font-weight: 700; color: var(--primary); margin: 20px 0;">--</div>
+                <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">Distance to target location</p>
+                
+                <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;">
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: var(--danger);"></div>
+                    <span>Your location</span>
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: var(--success); margin-left: 20px;"></div>
+                    <span>Target location</span>
+                </div>
+                
+                <div id="gps-progress" style="background: var(--border); height: 8px; border-radius: 4px; margin: 20px 0; overflow: hidden;">
+                    <div id="gps-progress-bar" style="height: 100%; background: var(--success); width: 0%; transition: width 0.3s;"></div>
+                </div>
+                
+                <p id="gps-status" style="color: var(--text-secondary); font-size: 13px;">Move closer to check in</p>
+            </div>
+            <div style="padding: 16px; display: flex; gap: 8px;">
+                <button id="check-in-btn" style="flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; background: var(--primary); color: var(--background);" disabled>
+                    <i class="fas fa-map-marker-alt"></i> Check In
+                </button>
+                <button id="close-gps-modal" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--border); font-weight: 600; cursor: pointer; background: var(--card); color: var(--text);">
                     <i class="fas fa-times"></i> Cancel
                 </button>
             </div>
@@ -1650,21 +1195,25 @@
     </div>
 
     <!-- Emergency Modal -->
-    <div id="emergency-modal" class="emergency-modal">
-        <div class="emergency-container">
-            <i class="fas fa-exclamation-triangle"></i>
-            <h2>EMERGENCY ASSISTANCE</h2>
-            <p>Your location has been sent to event organizers. Choose an emergency option:</p>
-            <div class="emergency-buttons">
-                <button id="call-ambulance-btn">
-                    <i class="fas fa-ambulance"></i> Call Ambulance: 064 410 6000
-                </button>
-                <button id="call-tollfree-btn">
-                    <i class="fas fa-phone-alt"></i> Call Toll-Free: 1411
-                </button>
-                <button id="close-emergency-modal-btn" style="margin-top: 16px; background: rgba(255,255,255,0.1);">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
+    <div id="emergency-modal" class="modal-overlay">
+        <div class="modal-container" style="background: var(--danger); color: white; text-align: center;">
+            <div style="padding: 24px;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
+                <h2 style="font-size: 24px; margin-bottom: 12px;">EMERGENCY ASSISTANCE</h2>
+                <p style="margin-bottom: 20px; line-height: 1.5; opacity: 0.9; font-size: 14px;">
+                    Your location has been sent to event organizers. Choose an emergency option:
+                </p>
+                <div class="emergency-buttons" style="display: flex; flex-direction: column; gap: 8px;">
+                    <a href="tel:0644106000" style="padding: 12px; border: 2px solid white; border-radius: 8px; background: transparent; color: white; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 13px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fas fa-ambulance"></i> Call Ambulance: 064 410 6000
+                    </a>
+                    <a href="tel:1411" style="padding: 12px; border: 2px solid white; border-radius: 8px; background: transparent; color: white; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 13px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fas fa-phone-alt"></i> Call Toll-Free: 1411
+                    </a>
+                    <button id="close-emergency-modal-btn" style="margin-top: 16px; padding: 12px; border: 2px solid white; border-radius: 8px; background: rgba(255,255,255,0.1); color: white; font-weight: 600; cursor: pointer; font-size: 13px;">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1684,6 +1233,22 @@
             const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndubW5jc2JidGxwY3d2aWljc2JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxMDU3MTMsImV4cCI6MjA4MTY4MTcxM30.pSOYbXWPLhKItpfDnRMfi3lyPVOvTccQudvN9YIucVs';
             const MAPBOX_TOKEN = 'pk.eyJ1IjoianVzYSIsImEiOiJjbWpjanh5amEwbDEwM2dzOXVhbjZ5dzcwIn0.stWdbPHCrf9sKrRJRmShlg';
             
+            // App Constants
+            const MISSION_TYPES = {
+                PHOTO: 'photo',
+                VIDEO: 'video',
+                AUDIO: 'audio',
+                TEXT: 'text',
+                QR_SCAN: 'qr_scan',
+                GPS_CHECKIN: 'gps_checkin'
+            };
+            
+            const DEFAULT_LOCATION = {
+                lat: -22.68,
+                lng: 17.08,
+                accuracy: 10000
+            };
+            
             // Initialize Supabase
             const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             
@@ -1697,85 +1262,294 @@
             let map = null;
             let zones = [];
             let zoneMarkers = [];
-
+            let currentTab = 'map';
+            let locationWatchId = null;
+            let mediaStream = null;
+            let mediaRecorder = null;
+            let recordedChunks = [];
+            let recordingTimer = null;
+            let recordingSeconds = 0;
+            let eventEndTime = null;
+            let cachedData = {
+                zones: null,
+                missions: {},
+                prizes: null,
+                lastUpdated: null
+            };
+            
+            // ============================================
+            // STATE MANAGEMENT (LocalStorage)
+            // ============================================
+            
+            function saveAppState() {
+                try {
+                    const state = {
+                        currentTab: currentTab,
+                        lastLocation: userLocation,
+                        cachedData: cachedData,
+                        timestamp: Date.now()
+                    };
+                    localStorage.setItem('hunt_app_state', JSON.stringify(state));
+                    console.log('App state saved');
+                } catch (error) {
+                    console.error('Error saving app state:', error);
+                }
+            }
+            
+            function loadAppState() {
+                try {
+                    const saved = localStorage.getItem('hunt_app_state');
+                    if (saved) {
+                        const state = JSON.parse(saved);
+                        
+                        // Load cached data if not too old (1 hour)
+                        if (state.cachedData && state.cachedData.lastUpdated && 
+                            (Date.now() - state.cachedData.lastUpdated) < 3600000) {
+                            cachedData = state.cachedData;
+                            console.log('Loaded cached data');
+                        }
+                        
+                        // Restore tab
+                        if (state.currentTab) {
+                            currentTab = state.currentTab;
+                            console.log('Restored tab:', currentTab);
+                        }
+                        
+                        // Restore location
+                        if (state.lastLocation) {
+                            userLocation = state.lastLocation;
+                            console.log('Restored location from cache');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading app state:', error);
+                }
+            }
+            
+            function clearAppState() {
+                try {
+                    localStorage.removeItem('hunt_app_state');
+                    console.log('App state cleared');
+                } catch (error) {
+                    console.error('Error clearing app state:', error);
+                }
+            }
+            
             // ============================================
             // EVENT LISTENERS SETUP
             // ============================================
             
-            // Fix: Add preventDefault to auth links
-            document.getElementById('show-signup-link').addEventListener('click', function(e) {
-                e.preventDefault();
-                showSignup();
-            });
-            
-            document.getElementById('show-login-link').addEventListener('click', function(e) {
-                e.preventDefault();
-                showLogin();
-            });
-            
-            // Auth buttons
-            document.getElementById('login-button').addEventListener('click', login);
-            document.getElementById('signup-button').addEventListener('click', signup);
-            
-            // Location permission button
-            document.getElementById('request-location-btn')?.addEventListener('click', requestLocationPermission);
-            
-            // Bottom navigation
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    const tab = this.getAttribute('data-tab');
-                    showTab(tab);
+            function setupEventListeners() {
+                // Auth links with preventDefault
+                document.getElementById('show-signup-link').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showSignup();
                 });
-            });
-            
-            // Profile buttons
-            document.getElementById('profile-button').addEventListener('click', function() {
-                showTab('profile');
-            });
-            document.getElementById('edit-profile-btn').addEventListener('click', editProfile);
-            document.getElementById('change-password-btn').addEventListener('click', changePassword);
-            document.getElementById('view-activity-btn').addEventListener('click', viewActivity);
-            document.getElementById('logout-btn').addEventListener('click', logout);
-            
-            // SOS button
-            document.getElementById('sos-button').addEventListener('click', showEmergencyModal);
-            
-            // Shop filters
-            document.querySelectorAll('#shop-categories .category-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const category = this.getAttribute('data-category');
-                    filterShop(category);
+                
+                document.getElementById('show-login-link').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showLogin();
                 });
-            });
-            
-            // Inventory filters
-            document.querySelectorAll('#inventory-filters .filter-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const status = this.getAttribute('data-status');
-                    filterInventory(status);
-                });
-            });
-            
-            // Leaderboard filters
-            document.querySelectorAll('#leaderboard-filters .leaderboard-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const type = this.getAttribute('data-type');
-                    loadLeaderboard(type);
-                });
-            });
-            
-            // Handle email confirmation
-            supabase.auth.onAuthStateChange((event, session) => {
-                console.log('Auth event:', event);
-                if (event === 'SIGNED_IN' && session) {
-                    console.log('User signed in via email confirmation');
-                    loadUserProfile(session.user.id).then(() => {
-                        showApp();
-                    });
-                } else if (event === 'SIGNED_OUT') {
-                    console.log('User signed out');
+                
+                // Auth buttons
+                document.getElementById('login-button').addEventListener('click', login);
+                document.getElementById('signup-button').addEventListener('click', signup);
+                
+                // Location permission button
+                const requestLocationBtn = document.getElementById('request-location-btn');
+                if (requestLocationBtn) {
+                    requestLocationBtn.addEventListener('click', requestLocationPermission);
                 }
-            });
+                
+                // Bottom navigation
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const tab = this.getAttribute('data-tab');
+                        showTab(tab);
+                    });
+                });
+                
+                // Profile buttons
+                document.getElementById('profile-button').addEventListener('click', function() {
+                    showTab('profile');
+                });
+                document.getElementById('edit-profile-btn').addEventListener('click', editProfile);
+                document.getElementById('change-password-btn').addEventListener('click', changePassword);
+                document.getElementById('view-activity-btn').addEventListener('click', viewActivity);
+                document.getElementById('logout-btn').addEventListener('click', logout);
+                
+                // SOS button
+                document.getElementById('sos-button').addEventListener('click', showEmergencyModal);
+                
+                // Shop filters
+                document.querySelectorAll('#shop-categories .category-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const category = this.getAttribute('data-category');
+                        filterShop(category);
+                    });
+                });
+                
+                // Inventory filters
+                document.querySelectorAll('#inventory-filters .filter-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const status = this.getAttribute('data-status');
+                        filterInventory(status);
+                    });
+                });
+                
+                // Leaderboard filters
+                document.querySelectorAll('#leaderboard-filters .leaderboard-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const type = this.getAttribute('data-type');
+                        loadLeaderboard(type);
+                    });
+                });
+                
+                // Emergency modal buttons
+                document.getElementById('close-emergency-modal-btn')?.addEventListener('click', closeEmergencyModal);
+                
+                // QR modal
+                document.getElementById('close-qr-modal')?.addEventListener('click', closeQRModal);
+                
+                // Text modal
+                document.getElementById('submit-text-answer')?.addEventListener('click', submitTextAnswer);
+                document.getElementById('close-text-modal')?.addEventListener('click', closeTextModal);
+                
+                // GPS modal
+                document.getElementById('check-in-btn')?.addEventListener('click', submitGPSCheckin);
+                document.getElementById('close-gps-modal')?.addEventListener('click', closeGPSModal);
+                
+                // Handle browser back/forward buttons
+                window.addEventListener('popstate', function(event) {
+                    if (event.state && event.state.tab) {
+                        showTab(event.state.tab, false);
+                    }
+                });
+                
+                // Save state before page unload
+                window.addEventListener('beforeunload', function() {
+                    saveAppState();
+                });
+                
+                console.log('Event listeners setup complete');
+            }
+            
+            // ============================================
+            // INITIALIZATION FLOW
+            // ============================================
+            
+            function initApp() {
+                console.log('Initializing app...');
+                
+                // Load saved state
+                loadAppState();
+                
+                // Setup event listeners
+                setupEventListeners();
+                
+                // Setup auth state change handler
+                supabase.auth.onAuthStateChange((event, session) => {
+                    console.log('Auth state change:', event);
+                    
+                    if (event === 'SIGNED_IN' && session) {
+                        console.log('User signed in:', session.user.email);
+                        currentSession = session;
+                        loadUserProfile(session.user.id).then(() => {
+                            showApp();
+                            setupRealTimeSubscriptions();
+                        });
+                    } else if (event === 'SIGNED_OUT') {
+                        console.log('User signed out');
+                        cleanupApp();
+                        showLogin();
+                    } else if (event === 'TOKEN_REFRESHED') {
+                        console.log('Token refreshed');
+                        if (session) {
+                            currentSession = session;
+                        }
+                    }
+                });
+                
+                // Check existing session
+                checkSession();
+            }
+            
+            async function checkSession() {
+                console.log('Checking for existing session...');
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    console.log('Session found:', session.user.email);
+                    currentSession = session;
+                    await loadUserProfile(session.user.id);
+                    showApp();
+                    setupRealTimeSubscriptions();
+                } else {
+                    console.log('No session found');
+                }
+            }
+            
+            // ============================================
+            // REAL-TIME SUBSCRIPTIONS
+            // ============================================
+            
+            function setupRealTimeSubscriptions() {
+                if (!currentUser) return;
+                
+                console.log('Setting up real-time subscriptions...');
+                
+                // Subscribe to SOS alerts
+                const sosChannel = supabase
+                    .channel('sos-alerts')
+                    .on('postgres_changes', 
+                        { event: 'INSERT', schema: 'public', table: 'sos_alerts', filter: `user_id=eq.${currentUser.id}` },
+                        (payload) => {
+                            console.log('SOS alert received:', payload.new);
+                            handleSOSAlert(payload.new);
+                        }
+                    )
+                    .subscribe();
+                
+                // Subscribe to user updates (coins, etc)
+                const userChannel = supabase
+                    .channel('user-updates')
+                    .on('postgres_changes',
+                        { event: 'UPDATE', schema: 'public', table: 'users', filter: `id=eq.${currentUser.id}` },
+                        (payload) => {
+                            console.log('User update received:', payload.new);
+                            if (payload.new.coins !== currentUser.coins) {
+                                currentUser.coins = payload.new.coins;
+                                updateCoinDisplay();
+                                showToast(`Coins updated: ${payload.new.coins}`, 'info');
+                            }
+                        }
+                    )
+                    .subscribe();
+                
+                // Subscribe to mission status updates
+                const missionChannel = supabase
+                    .channel('mission-updates')
+                    .on('postgres_changes',
+                        { event: 'UPDATE', schema: 'public', table: 'user_missions', filter: `user_id=eq.${currentUser.id}` },
+                        (payload) => {
+                            console.log('Mission update received:', payload.new);
+                            if (currentZone && payload.new.status === 'completed') {
+                                showToast('Mission completed!', 'success');
+                                loadMissionsForZone(currentZone.id);
+                            }
+                        }
+                    )
+                    .subscribe();
+                
+                console.log('Real-time subscriptions active');
+            }
+            
+            function handleSOSAlert(alert) {
+                if (alert.status === 'acknowledged') {
+                    showToast('Emergency assistance is on the way!', 'success');
+                } else {
+                    showEmergencyModal();
+                }
+            }
             
             // ============================================
             // MAP INITIALIZATION
@@ -1789,7 +1563,7 @@
                         return;
                     }
                     
-                    if (!MAPBOX_TOKEN || MAPBOX_TOKEN === 'your_mapbox_token_here') {
+                    if (!MAPBOX_TOKEN) {
                         console.error('Mapbox token not configured');
                         document.getElementById('map').innerHTML = '<div class="map-loading"><i class="fas fa-exclamation-triangle"></i><p>Map configuration error</p></div>';
                         return;
@@ -1800,23 +1574,48 @@
                     map = new mapboxgl.Map({
                         container: 'map',
                         style: 'mapbox://styles/mapbox/dark-v11',
-                        center: [17.08, -22.68], // Swakopmund coordinates
+                        center: [DEFAULT_LOCATION.lng, DEFAULT_LOCATION.lat],
                         zoom: 13,
-                        attributionControl: false
+                        attributionControl: false,
+                        maxZoom: 18,
+                        minZoom: 10
                     });
                     
+                    // Add navigation controls
                     map.addControl(new mapboxgl.NavigationControl());
                     
                     map.on('load', function() {
                         console.log('Map loaded successfully');
                         document.querySelector('.map-loading').style.display = 'none';
                         loadZonesForMap();
+                        
+                        // If we have cached user location, center on it
+                        if (userLocation) {
+                            updateUserLocationOnMap();
+                        }
                     });
                     
                     map.on('error', function(e) {
                         console.error('Map error:', e.error);
-                        showToast('Map loading failed: ' + e.error.message, 'error');
+                        showToast('Map loading failed', 'error');
                     });
+                    
+                    // Handle map resize when tab becomes visible
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting && map) {
+                                setTimeout(() => {
+                                    map.resize();
+                                    console.log('Map resized');
+                                }, 100);
+                            }
+                        });
+                    });
+                    
+                    const mapContainer = document.getElementById('map-tab');
+                    if (mapContainer) {
+                        observer.observe(mapContainer);
+                    }
                     
                 } catch (error) {
                     console.error('Map initialization error:', error);
@@ -1828,6 +1627,16 @@
                 if (!map) return;
                 
                 console.log('Loading zones for map...');
+                
+                // Check cache first
+                if (cachedData.zones && cachedData.zones.length > 0) {
+                    zones = cachedData.zones;
+                    console.log(`Loaded ${zones.length} zones from cache`);
+                    renderZonesOnMap();
+                    return;
+                }
+                
+                // Load from database
                 const { data: zonesData, error } = await supabase
                     .from('zones')
                     .select('*')
@@ -1835,15 +1644,39 @@
                 
                 if (error) {
                     console.error('Error loading zones:', error);
+                    showToast('Error loading zones', 'error');
                     return;
                 }
                 
                 zones = zonesData || [];
-                console.log(`Loaded ${zones.length} zones for map`);
+                console.log(`Loaded ${zones.length} zones from database`);
+                
+                // Cache the data
+                cachedData.zones = zones;
+                cachedData.lastUpdated = Date.now();
+                saveAppState();
+                
+                renderZonesOnMap();
+            }
+            
+            function renderZonesOnMap() {
+                if (!map || !map.loaded()) return;
                 
                 // Clear existing markers
                 zoneMarkers.forEach(marker => marker.remove());
                 zoneMarkers = [];
+                
+                // Remove existing circle layers
+                zones.forEach((zone) => {
+                    const layerId = `zone-circle-${zone.id}`;
+                    if (map.getLayer(layerId)) {
+                        map.removeLayer(layerId);
+                    }
+                    const sourceId = `zone-${zone.id}`;
+                    if (map.getSource(sourceId)) {
+                        map.removeSource(sourceId);
+                    }
+                });
                 
                 // Add markers for each zone
                 zones.forEach(zone => {
@@ -1852,25 +1685,45 @@
                         return;
                     }
                     
+                    // Create custom marker element
                     const el = document.createElement('div');
                     el.className = 'zone-marker';
-                    el.style.width = '24px';
-                    el.style.height = '24px';
+                    el.style.width = '28px';
+                    el.style.height = '28px';
                     el.style.backgroundColor = 'rgba(74, 144, 226, 0.3)';
                     el.style.borderRadius = '50%';
                     el.style.border = '3px solid #4a90e2';
                     el.style.cursor = 'pointer';
+                    el.style.display = 'flex';
+                    el.style.alignItems = 'center';
+                    el.style.justifyContent = 'center';
+                    el.style.color = '#4a90e2';
+                    el.style.fontWeight = 'bold';
+                    el.style.fontSize = '12px';
                     el.title = zone.name;
                     
+                    // Add zone number (1-based index)
+                    const zoneIndex = zones.indexOf(zone) + 1;
+                    el.textContent = zoneIndex;
+                    
+                    // Create marker
                     const marker = new mapboxgl.Marker(el)
                         .setLngLat([zone.coordinates.lng, zone.coordinates.lat])
                         .setPopup(new mapboxgl.Popup({ offset: 25 })
-                            .setHTML(`<h3>${zone.name}</h3><p>${zone.description || 'No description'}</p>`))
+                            .setHTML(`
+                                <div style="padding: 8px; max-width: 200px;">
+                                    <h3 style="margin: 0 0 5px 0; color: #4a90e2;">${zone.name}</h3>
+                                    <p style="margin: 0; color: #666; font-size: 12px;">${zone.description || 'No description'}</p>
+                                    <p style="margin: 5px 0 0 0; color: #888; font-size: 11px;">
+                                        Radius: ${zone.radius_meters || 100}m
+                                    </p>
+                                </div>
+                            `))
                         .addTo(map);
                     
                     zoneMarkers.push(marker);
                     
-                    // Add zone circles if radius is defined
+                    // Add zone circle if radius is defined
                     if (zone.radius_meters) {
                         map.addSource(`zone-${zone.id}`, {
                             type: 'geojson',
@@ -1891,34 +1744,37 @@
                                 'circle-radius': {
                                     stops: [
                                         [0, 0],
-                                        [20, zone.radius_meters / 0.075] // Convert meters to pixels at zoom 20
+                                        [20, zone.radius_meters / 0.075]
                                     ],
                                     base: 2
                                 },
                                 'circle-color': '#4a90e2',
                                 'circle-opacity': 0.1,
                                 'circle-stroke-width': 2,
-                                'circle-stroke-color': '#4a90e2'
+                                'circle-stroke-color': '#4a90e2',
+                                'circle-stroke-opacity': 0.3
                             }
                         });
                     }
                 });
+                
+                console.log(`Rendered ${zoneMarkers.length} zones on map`);
             }
             
             function updateUserLocationOnMap() {
-                if (!map || !userLocation) return;
+                if (!map || !map.loaded() || !userLocation) return;
                 
                 // Remove existing user marker
-                const existingMarkers = document.getElementsByClassName('user-marker');
+                const existingMarkers = document.getElementsByClassName('user-location-marker');
                 while (existingMarkers.length > 0) {
                     existingMarkers[0].remove();
                 }
                 
-                // Add new user marker
+                // Create user marker
                 const el = document.createElement('div');
-                el.className = 'user-marker';
-                el.style.width = '20px';
-                el.style.height = '20px';
+                el.className = 'user-location-marker';
+                el.style.width = '24px';
+                el.style.height = '24px';
                 el.style.backgroundColor = 'var(--primary)';
                 el.style.borderRadius = '50%';
                 el.style.border = '3px solid var(--background)';
@@ -1928,35 +1784,1269 @@
                     .setLngLat([userLocation.lng, userLocation.lat])
                     .addTo(map);
                 
-                // Center map on user
-                map.flyTo({
-                    center: [userLocation.lng, userLocation.lat],
-                    zoom: 15,
-                    essential: true,
-                    duration: 1000
+                // Add accuracy circle if available
+                if (userLocation.accuracy && userLocation.accuracy < 1000) {
+                    const accuracySourceId = 'user-accuracy-circle';
+                    const accuracyLayerId = 'user-accuracy-circle-layer';
+                    
+                    // Remove existing accuracy circle
+                    if (map.getLayer(accuracyLayerId)) {
+                        map.removeLayer(accuracyLayerId);
+                    }
+                    if (map.getSource(accuracySourceId)) {
+                        map.removeSource(accuracySourceId);
+                    }
+                    
+                    // Add new accuracy circle
+                    map.addSource(accuracySourceId, {
+                        type: 'geojson',
+                        data: {
+                            type: 'Feature',
+                            geometry: {
+                                type: 'Point',
+                                coordinates: [userLocation.lng, userLocation.lat]
+                            }
+                        }
+                    });
+                    
+                    map.addLayer({
+                        id: accuracyLayerId,
+                        type: 'circle',
+                        source: accuracySourceId,
+                        paint: {
+                            'circle-radius': userLocation.accuracy,
+                            'circle-color': 'rgba(255, 255, 255, 0.1)',
+                            'circle-stroke-width': 1,
+                            'circle-stroke-color': 'rgba(255, 255, 255, 0.3)'
+                        }
+                    });
+                }
+                
+                // Center map on user if this is first location or map tab is active
+                if (currentTab === 'map') {
+                    map.flyTo({
+                        center: [userLocation.lng, userLocation.lat],
+                        zoom: 15,
+                        essential: true,
+                        duration: 1000
+                    });
+                }
+            }
+            
+            // ============================================
+            // LOCATION SERVICES
+            // ============================================
+            
+            function requestLocationPermission() {
+                console.log('Requesting location permission...');
+                
+                // Show permission request UI
+                const permissionEl = document.getElementById('location-permission');
+                if (permissionEl) {
+                    permissionEl.style.display = 'block';
+                    permissionEl.innerHTML = `
+                        <p>Getting your location...</p>
+                        <div class="spinner" style="margin: 12px auto; width: 24px; height: 24px;"></div>
+                    `;
+                }
+                
+                if (!navigator.geolocation) {
+                    console.warn('Geolocation not supported');
+                    handleLocationError('Geolocation is not supported by your browser');
+                    return;
+                }
+                
+                // Request high accuracy location
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                };
+                
+                // Get current position first
+                navigator.geolocation.getCurrentPosition(
+                    handleLocationSuccess,
+                    handleLocationError,
+                    options
+                );
+                
+                // Start watching position for updates
+                if (locationWatchId) {
+                    navigator.geolocation.clearWatch(locationWatchId);
+                }
+                
+                locationWatchId = navigator.geolocation.watchPosition(
+                    handleLocationSuccess,
+                    handleLocationError,
+                    { enableHighAccuracy: true, maximumAge: 30000, timeout: 5000 }
+                );
+                
+                console.log('Location watch started, ID:', locationWatchId);
+            }
+            
+            function handleLocationSuccess(position) {
+                console.log('Location obtained:', position.coords);
+                
+                userLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                    accuracy: position.coords.accuracy,
+                    altitude: position.coords.altitude,
+                    heading: position.coords.heading,
+                    speed: position.coords.speed,
+                    timestamp: position.timestamp
+                };
+                
+                // Hide permission request UI
+                const permissionEl = document.getElementById('location-permission');
+                if (permissionEl) {
+                    permissionEl.style.display = 'none';
+                }
+                
+                // Update map
+                updateUserLocationOnMap();
+                
+                // Check zones
+                checkZones();
+                
+                // Save to state
+                saveAppState();
+                
+                // If this is the first location, start geofencing
+                if (!window.geofenceInterval) {
+                    startGeofencing();
+                }
+                
+                // Show accuracy toast on first fix
+                if (position.coords.accuracy < 50) {
+                    showToast(`Location accurate to ${Math.round(position.coords.accuracy)}m`, 'success');
+                } else if (position.coords.accuracy < 200) {
+                    showToast(`Location accurate to ${Math.round(position.coords.accuracy)}m`, 'info');
+                }
+            }
+            
+            function handleLocationError(error) {
+                console.warn('Location error:', error.code, error.message);
+                
+                let errorMessage = 'Unable to get your location. ';
+                let showFallback = false;
+                
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage += 'Please enable location services in your browser settings.';
+                        showFallback = true;
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage += 'Location information is unavailable.';
+                        showFallback = true;
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage += 'Location request timed out.';
+                        showFallback = true;
+                        break;
+                    default:
+                        errorMessage += 'An unknown error occurred.';
+                        showFallback = true;
+                        break;
+                }
+                
+                // Update permission UI
+                const permissionEl = document.getElementById('location-permission');
+                if (permissionEl) {
+                    permissionEl.innerHTML = `
+                        <p>${errorMessage}</p>
+                        <button id="request-location-btn">Try Again</button>
+                        <p style="margin-top: 12px; font-size: 12px; color: var(--text-secondary);">
+                            Using default location for now.
+                        </p>
+                    `;
+                    
+                    // Reattach event listener
+                    document.getElementById('request-location-btn').addEventListener('click', requestLocationPermission);
+                }
+                
+                // Use default location as fallback
+                if (showFallback) {
+                    userLocation = DEFAULT_LOCATION;
+                    updateUserLocationOnMap();
+                    showToast('Using default location. Enable GPS for accurate zone detection.', 'warning');
+                }
+                
+                // Save to state
+                saveAppState();
+            }
+            
+            function startGeofencing() {
+                console.log('Starting geofencing...');
+                checkZones();
+                
+                // Check zones every 30 seconds
+                window.geofenceInterval = setInterval(checkZones, 30000);
+            }
+            
+            async function checkZones() {
+                if (!userLocation || !zones.length) {
+                    console.log('No location or zones available for zone check');
+                    return;
+                }
+                
+                console.log('Checking zones...');
+                let currentZoneFound = null;
+                let enteredNewZone = false;
+                
+                zones.forEach(zone => {
+                    if (!zone.coordinates || !zone.coordinates.lat || !zone.coordinates.lng) {
+                        return;
+                    }
+                    
+                    const distance = getDistance(
+                        userLocation.lat,
+                        userLocation.lng,
+                        zone.coordinates.lat,
+                        zone.coordinates.lng
+                    );
+                    
+                    const zoneRadius = zone.radius_meters || 100;
+                    
+                    if (distance <= zoneRadius) {
+                        if (currentZone?.id !== zone.id) {
+                            // Entered new zone
+                            console.log(`Entered zone: ${zone.name} (${distance.toFixed(1)}m)`);
+                            currentZoneFound = zone;
+                            enteredNewZone = true;
+                        }
+                    }
                 });
+                
+                // If entered new zone, unlock missions
+                if (enteredNewZone && currentZoneFound) {
+                    unlockZoneMissions(currentZoneFound.id);
+                    showToast(`Entered ${currentZoneFound.name}! Missions unlocked.`, 'success');
+                }
+                
+                // Update current zone display
+                currentZone = currentZoneFound;
+                updateCurrentZoneDisplay();
+            }
+            
+            function getDistance(lat1, lon1, lat2, lon2) {
+                const R = 6371e3; // Earth radius in meters
+                const φ1 = lat1 * Math.PI/180;
+                const φ2 = lat2 * Math.PI/180;
+                const Δφ = (lat2-lat1) * Math.PI/180;
+                const Δλ = (lon2-lon1) * Math.PI/180;
+                
+                const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                          Math.cos(φ1) * Math.cos(φ2) *
+                          Math.sin(Δλ/2) * Math.sin(Δλ/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                
+                return R * c;
+            }
+            
+            function updateCurrentZoneDisplay() {
+                const zoneElement = document.getElementById('current-zone');
+                if (!zoneElement) return;
+                
+                if (currentZone) {
+                    zoneElement.innerHTML = `
+                        <h4 style="margin-bottom: 8px; color: var(--primary); font-size: 16px;">${currentZone.name}</h4>
+                        <p style="color: var(--text-secondary); font-size: 13px;">
+                            ${currentZone.description || 'Complete missions in this area to earn coins!'}
+                        </p>
+                        <p style="color: var(--accent); font-size: 12px; margin-top: 8px;">
+                            <i class="fas fa-map-marker-alt"></i> You're in the zone!
+                        </p>
+                    `;
+                } else {
+                    zoneElement.innerHTML = `
+                        <p style="color: var(--text-secondary); font-size: 13px;">
+                            <i class="fas fa-map-marker-alt"></i> Not in any zone. Move to a marked area to unlock missions.
+                        </p>
+                    `;
+                }
+            }
+            
+            // ============================================
+            // MISSION SYSTEM
+            // ============================================
+            
+            async function unlockZoneMissions(zoneId) {
+                console.log(`Unlocking missions for zone: ${zoneId}`);
+                if (!currentUser) return;
+                
+                const { data: missions, error } = await supabase
+                    .from('missions')
+                    .select('*')
+                    .eq('zone_id', zoneId)
+                    .eq('status', 'active');
+                
+                if (error || !missions) {
+                    console.error('Error loading missions:', error);
+                    return;
+                }
+                
+                console.log(`Found ${missions.length} missions in zone`);
+                
+                if (missions.length > 0) {
+                    for (const mission of missions) {
+                        // Check if user mission already exists
+                        const { data: existing } = await supabase
+                            .from('user_missions')
+                            .select('*')
+                            .eq('user_id', currentUser.id)
+                            .eq('mission_id', mission.id)
+                            .single();
+                        
+                        if (!existing) {
+                            // Create unlocked user mission
+                            console.log(`Creating user mission for: ${mission.title}`);
+                            const { error: insertError } = await supabase
+                                .from('user_missions')
+                                .upsert([{
+                                    user_id: currentUser.id,
+                                    mission_id: mission.id,
+                                    status: 'unlocked',
+                                    created_at: new Date().toISOString(),
+                                    updated_at: new Date().toISOString()
+                                }], {
+                                    onConflict: 'user_id,mission_id'
+                                });
+                            
+                            if (insertError) {
+                                console.error('Error creating user mission:', insertError);
+                            }
+                        } else if (existing.status === 'locked') {
+                            // Update locked mission to unlocked
+                            console.log(`Unlocking existing mission: ${mission.title}`);
+                            await supabase
+                                .from('user_missions')
+                                .update({ 
+                                    status: 'unlocked',
+                                    updated_at: new Date().toISOString()
+                                })
+                                .eq('id', existing.id);
+                        }
+                    }
+                    
+                    // Reload missions for current zone
+                    if (document.getElementById('missions-tab').classList.contains('active')) {
+                        loadMissionsForZone(zoneId);
+                    }
+                }
+            }
+            
+            async function loadZones() {
+                console.log('Loading zones...');
+                const zoneList = document.getElementById('zone-list');
+                if (!zoneList) return;
+                
+                // Check cache first
+                if (cachedData.zones && cachedData.zones.length > 0) {
+                    zones = cachedData.zones;
+                    renderZoneList();
+                    return;
+                }
+                
+                // Show loading
+                zoneList.innerHTML = '<div class="spinner" style="margin: 20px auto;"></div>';
+                
+                // Load from database
+                const { data: zonesData, error } = await supabase
+                    .from('zones')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('name');
+                
+                if (error) {
+                    console.error('Error loading zones:', error);
+                    zoneList.innerHTML = '<p style="color: var(--text-secondary); padding: 20px; text-align: center; font-size: 13px;">Error loading zones.</p>';
+                    return;
+                }
+                
+                if (!zonesData || zonesData.length === 0) {
+                    zoneList.innerHTML = '<p style="color: var(--text-secondary); padding: 20px; text-align: center; font-size: 13px;">No zones available yet.</p>';
+                    console.log('No zones found');
+                    return;
+                }
+                
+                console.log(`Loaded ${zonesData.length} zones`);
+                zones = zonesData;
+                
+                // Cache the data
+                cachedData.zones = zones;
+                cachedData.lastUpdated = Date.now();
+                saveAppState();
+                
+                renderZoneList();
+            }
+            
+            function renderZoneList() {
+                const zoneList = document.getElementById('zone-list');
+                if (!zoneList) return;
+                
+                zoneList.innerHTML = '';
+                
+                zones.forEach((zone, index) => {
+                    const zoneEl = document.createElement('div');
+                    zoneEl.className = 'zone-item';
+                    if (index === 0) zoneEl.classList.add('active');
+                    zoneEl.textContent = zone.name;
+                    zoneEl.addEventListener('click', () => {
+                        document.querySelectorAll('.zone-item').forEach(item => item.classList.remove('active'));
+                        zoneEl.classList.add('active');
+                        loadMissionsForZone(zone.id);
+                    });
+                    zoneList.appendChild(zoneEl);
+                });
+                
+                // Load missions for first zone
+                if (zones.length > 0) {
+                    loadMissionsForZone(zones[0].id);
+                }
+            }
+            
+            async function loadMissionsForZone(zoneId) {
+                console.log(`Loading missions for zone: ${zoneId}`);
+                const missionsList = document.getElementById('missions-list');
+                if (!missionsList) return;
+                
+                missionsList.innerHTML = '<div class="spinner" style="margin: 40px auto;"></div>';
+                
+                // Check cache first
+                const cacheKey = `zone_${zoneId}`;
+                if (cachedData.missions[cacheKey]) {
+                    console.log('Loading missions from cache');
+                    renderMissions(cachedData.missions[cacheKey], zoneId);
+                    return;
+                }
+                
+                // Load from database
+                const { data: missions, error } = await supabase
+                    .from('missions')
+                    .select(`
+                        *,
+                        user_missions (
+                            status,
+                            completed_at,
+                            earned_coins
+                        )
+                    `)
+                    .eq('zone_id', zoneId)
+                    .eq('status', 'active')
+                    .order('created_at');
+                
+                if (error) {
+                    console.error('Error loading missions:', error);
+                    missionsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Error loading missions.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                if (!missions || missions.length === 0) {
+                    missionsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <p>No missions available in this zone yet.</p>
+                        </div>
+                    `;
+                    console.log('No missions found in zone');
+                    return;
+                }
+                
+                console.log(`Loaded ${missions.length} missions`);
+                
+                // Cache the data
+                cachedData.missions[cacheKey] = missions;
+                cachedData.lastUpdated = Date.now();
+                saveAppState();
+                
+                renderMissions(missions, zoneId);
+            }
+            
+            function renderMissions(missions, zoneId) {
+                const missionsList = document.getElementById('missions-list');
+                if (!missionsList) return;
+                
+                missionsList.innerHTML = '';
+                
+                missions.forEach(mission => {
+                    const userMission = mission.user_missions?.[0];
+                    const status = userMission?.status || 'locked';
+                    const isCompleted = status === 'completed';
+                    const isUnlocked = status === 'unlocked' || status === 'pending';
+                    
+                    // Get mission type icon
+                    let typeIcon = 'fas fa-question';
+                    let typeLabel = 'Unknown';
+                    switch(mission.mission_type) {
+                        case 'photo': typeIcon = 'fas fa-camera'; typeLabel = 'Photo'; break;
+                        case 'video': typeIcon = 'fas fa-video'; typeLabel = 'Video'; break;
+                        case 'audio': typeIcon = 'fas fa-microphone'; typeLabel = 'Audio'; break;
+                        case 'text': typeIcon = 'fas fa-font'; typeLabel = 'Text'; break;
+                        case 'qr_scan': typeIcon = 'fas fa-qrcode'; typeLabel = 'QR Scan'; break;
+                        case 'gps_checkin': typeIcon = 'fas fa-map-marker-alt'; typeLabel = 'GPS Check-in'; break;
+                    }
+                    
+                    const missionCard = document.createElement('div');
+                    missionCard.className = `mission-card ${status}`;
+                    if (status === 'locked') missionCard.classList.add('locked');
+                    if (isCompleted) missionCard.classList.add('completed');
+                    if (isUnlocked) missionCard.classList.add('unlocked');
+                    
+                    missionCard.innerHTML = `
+                        <div class="mission-header">
+                            <div class="mission-title">${mission.title}</div>
+                            <div class="mission-points">${mission.points} coins</div>
+                        </div>
+                        <div class="mission-type-badge">
+                            <i class="${typeIcon}"></i> ${typeLabel}
+                        </div>
+                        ${mission.question ? `<div class="mission-question">${mission.question}</div>` : ''}
+                        ${mission.description ? `<div class="mission-description">${mission.description}</div>` : ''}
+                        ${mission.media_required_count > 0 ? `
+                            <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 8px;">
+                                <i class="fas fa-camera"></i> Requires ${mission.media_required_count} ${mission.media_required_count === 1 ? 'file' : 'files'}
+                            </div>
+                        ` : ''}
+                        ${mission.video_max_duration ? `
+                            <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 8px;">
+                                <i class="fas fa-clock"></i> Max ${mission.video_max_duration} seconds
+                            </div>
+                        ` : ''}
+                        <div class="mission-actions">
+                            ${isCompleted ? `
+                                <button class="action-btn completed" disabled>
+                                    <i class="fas fa-check"></i> Completed
+                                    ${userMission.earned_coins ? ` (+${userMission.earned_coins} coins)` : ''}
+                                </button>
+                            ` : isUnlocked ? `
+                                <button class="action-btn record start-mission-btn" data-mission-id="${mission.id}" data-mission-type="${mission.mission_type}">
+                                    <i class="fas fa-play"></i> Start Mission
+                                </button>
+                            ` : `
+                                <button class="action-btn" disabled>
+                                    <i class="fas fa-lock"></i> Locked
+                                </button>
+                            `}
+                        </div>
+                    `;
+                    missionsList.appendChild(missionCard);
+                });
+                
+                // Add event listeners to start mission buttons
+                document.querySelectorAll('.start-mission-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const missionId = this.getAttribute('data-mission-id');
+                        const missionType = this.getAttribute('data-mission-type');
+                        startMission(missionId, missionType);
+                    });
+                });
+            }
+            
+            async function startMission(missionId, missionType) {
+                console.log(`Starting mission: ${missionId}, type: ${missionType}`);
+                
+                // Load mission details
+                const { data: mission, error } = await supabase
+                    .from('missions')
+                    .select('*')
+                    .eq('id', missionId)
+                    .single();
+                
+                if (error || !mission) {
+                    showToast('Mission not found', 'error');
+                    return;
+                }
+                
+                currentMission = mission;
+                
+                // Handle different mission types
+                switch(missionType) {
+                    case 'photo':
+                        showPhotoMission(mission);
+                        break;
+                    case 'video':
+                        showVideoMission(mission);
+                        break;
+                    case 'audio':
+                        showAudioMission(mission);
+                        break;
+                    case 'text':
+                        showTextMission(mission);
+                        break;
+                    case 'qr_scan':
+                        showQRMission(mission);
+                        break;
+                    case 'gps_checkin':
+                        showGPSMission(mission);
+                        break;
+                    default:
+                        showToast('Unknown mission type', 'error');
+                }
+            }
+            
+            function showPhotoMission(mission) {
+                document.getElementById('mission-modal-title').textContent = mission.title;
+                document.getElementById('mission-modal-question').textContent = mission.question || 'Take a photo';
+                
+                const mediaControls = document.getElementById('media-controls');
+                mediaControls.innerHTML = `
+                    <button id="capture-photo-btn" style="grid-column: 1 / -1; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; background: var(--card); color: var(--text);">
+                        <i class="fas fa-camera"></i> Take Photo
+                    </button>
+                    <button id="close-media-modal-btn" style="grid-column: 1 / -1; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; background: var(--card); color: var(--text);">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                `;
+                
+                // Add event listeners
+                document.getElementById('capture-photo-btn').addEventListener('click', capturePhoto);
+                document.getElementById('close-media-modal-btn').addEventListener('click', closeMediaModal);
+                
+                // Initialize camera
+                initCamera(true, false);
+                
+                // Show modal
+                document.getElementById('media-modal').style.display = 'flex';
+            }
+            
+            function showVideoMission(mission) {
+                document.getElementById('mission-modal-title').textContent = mission.title;
+                document.getElementById('mission-modal-question').textContent = mission.question || 'Record a video';
+                
+                const mediaControls = document.getElementById('media-controls');
+                mediaControls.innerHTML = `
+                    <button id="record-video-btn" style="grid-column: 1 / -1; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; background: var(--card); color: var(--text);">
+                        <i class="fas fa-video"></i> Start Recording (max ${mission.video_max_duration || 10}s)
+                    </button>
+                    <button id="close-media-modal-btn" style="grid-column: 1 / -1; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; background: var(--card); color: var(--text);">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                `;
+                
+                // Add event listeners
+                document.getElementById('record-video-btn').addEventListener('click', toggleVideoRecording);
+                document.getElementById('close-media-modal-btn').addEventListener('click', closeMediaModal);
+                
+                // Initialize camera
+                initCamera(true, true);
+                
+                // Show modal
+                document.getElementById('media-modal').style.display = 'flex';
+            }
+            
+            function showAudioMission(mission) {
+                document.getElementById('mission-modal-title').textContent = mission.title;
+                document.getElementById('mission-modal-question').textContent = mission.question || 'Record audio';
+                
+                const mediaControls = document.getElementById('media-controls');
+                mediaControls.innerHTML = `
+                    <button id="record-audio-btn" style="grid-column: 1 / -1; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; background: var(--card); color: var(--text);">
+                        <i class="fas fa-microphone"></i> Start Recording (max ${mission.video_max_duration || 10}s)
+                    </button>
+                    <button id="close-media-modal-btn" style="grid-column: 1 / -1; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; background: var(--card); color: var(--text);">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                `;
+                
+                // Add event listeners
+                document.getElementById('record-audio-btn').addEventListener('click', toggleAudioRecording);
+                document.getElementById('close-media-modal-btn').addEventListener('click', closeMediaModal);
+                
+                // Initialize audio
+                initCamera(false, true);
+                
+                // Show modal
+                document.getElementById('media-modal').style.display = 'flex';
+            }
+            
+            function showTextMission(mission) {
+                document.getElementById('text-modal-title').textContent = mission.title;
+                document.getElementById('text-modal-question').textContent = mission.question || 'Enter your answer';
+                
+                // Clear previous input
+                document.getElementById('text-answer-input').value = '';
+                
+                // Show modal
+                document.getElementById('text-modal').style.display = 'flex';
+            }
+            
+            function showQRMission(mission) {
+                // Show placeholder for QR scanning
+                showToast('QR scanning coming soon! Please use the admin panel to create QR codes.', 'info');
+            }
+            
+            function showGPSMission(mission) {
+                document.getElementById('gps-modal-question').textContent = mission.question || 'Check in at the location';
+                
+                // Parse target coordinates from mission options
+                let targetLat, targetLng, targetRadius = 50;
+                
+                if (mission.options && mission.options.target) {
+                    targetLat = mission.options.target.lat;
+                    targetLng = mission.options.target.lng;
+                    targetRadius = mission.options.radius || 50;
+                } else if (currentZone && currentZone.coordinates) {
+                    targetLat = currentZone.coordinates.lat;
+                    targetLng = currentZone.coordinates.lng;
+                } else {
+                    showToast('GPS mission target not defined', 'error');
+                    return;
+                }
+                
+                // Store mission target for distance calculation
+                currentMission.targetLocation = { lat: targetLat, lng: targetLng, radius: targetRadius };
+                
+                // Start checking distance
+                startGPSChecking();
+                
+                // Show modal
+                document.getElementById('gps-modal').style.display = 'flex';
+            }
+            
+            // ============================================
+            // MEDIA CAPTURE FUNCTIONS
+            // ============================================
+            
+            async function initCamera(video = true, audio = false) {
+                try {
+                    // Stop any existing stream
+                    if (mediaStream) {
+                        mediaStream.getTracks().forEach(track => track.stop());
+                    }
+                    
+                    // Reset UI
+                    document.getElementById('video-preview').style.display = video ? 'block' : 'none';
+                    document.getElementById('audio-visualizer').style.display = 'none';
+                    document.getElementById('image-preview').style.display = 'none';
+                    document.getElementById('recording-indicator').style.display = 'none';
+                    document.getElementById('media-timer').style.display = 'none';
+                    
+                    // Get media stream
+                    const constraints = {
+                        video: video ? {
+                            facingMode: 'environment',
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
+                        } : false,
+                        audio: audio
+                    };
+                    
+                    mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+                    
+                    if (video) {
+                        const videoElement = document.getElementById('video-preview');
+                        videoElement.srcObject = mediaStream;
+                        videoElement.play();
+                    }
+                    
+                    console.log('Camera initialized successfully');
+                    
+                } catch (error) {
+                    console.error('Camera initialization error:', error);
+                    showToast('Camera access denied. Please allow camera access.', 'error');
+                    closeMediaModal();
+                }
+            }
+            
+            function capturePhoto() {
+                if (!mediaStream) return;
+                
+                const video = document.getElementById('video-preview');
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0);
+                
+                // Compress image (quality: 0.8 = 80%)
+                canvas.toBlob(async (blob) => {
+                    console.log('Photo captured, size:', blob.size, 'bytes');
+                    
+                    // Show preview
+                    const imagePreview = document.getElementById('image-preview');
+                    imagePreview.src = URL.createObjectURL(blob);
+                    imagePreview.style.display = 'block';
+                    document.getElementById('video-preview').style.display = 'none';
+                    
+                    // Ask for confirmation
+                    const mediaControls = document.getElementById('media-controls');
+                    mediaControls.innerHTML = `
+                        <button id="submit-photo-btn" style="padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; background: var(--primary); color: var(--background);">
+                            <i class="fas fa-check"></i> Submit Photo
+                        </button>
+                        <button id="retake-photo-btn" style="padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; background: var(--card); color: var(--text);">
+                            <i class="fas fa-redo"></i> Retake
+                        </button>
+                    `;
+                    
+                    document.getElementById('submit-photo-btn').addEventListener('click', () => submitMissionMedia(blob, 'image'));
+                    document.getElementById('retake-photo-btn').addEventListener('click', () => {
+                        imagePreview.style.display = 'none';
+                        document.getElementById('video-preview').style.display = 'block';
+                        showPhotoMission(currentMission);
+                    });
+                    
+                }, 'image/jpeg', 0.8);
+            }
+            
+            function toggleVideoRecording() {
+                const recordBtn = document.getElementById('record-video-btn');
+                
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    // Stop recording
+                    mediaRecorder.stop();
+                    recordBtn.innerHTML = '<i class="fas fa-video"></i> Start Recording';
+                    recordBtn.style.background = 'var(--card)';
+                    
+                    // Hide recording indicator
+                    document.getElementById('recording-indicator').style.display = 'none';
+                    document.getElementById('media-timer').style.display = 'none';
+                    clearInterval(recordingTimer);
+                } else {
+                    // Start recording
+                    recordedChunks = [];
+                    const options = { mimeType: 'video/webm;codecs=vp9,opus' };
+                    
+                    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                        options.mimeType = 'video/webm;codecs=vp8,opus';
+                    }
+                    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                        options.mimeType = 'video/webm';
+                    }
+                    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                        options.mimeType = 'video/mp4';
+                    }
+                    
+                    try {
+                        mediaRecorder = new MediaRecorder(mediaStream, options);
+                        
+                        mediaRecorder.ondataavailable = (event) => {
+                            if (event.data.size > 0) {
+                                recordedChunks.push(event.data);
+                            }
+                        };
+                        
+                        mediaRecorder.onstop = async () => {
+                            console.log('Video recording stopped');
+                            const blob = new Blob(recordedChunks, { type: options.mimeType });
+                            
+                            // Check duration
+                            const videoElement = document.createElement('video');
+                            videoElement.src = URL.createObjectURL(blob);
+                            
+                            videoElement.onloadedmetadata = () => {
+                                const duration = videoElement.duration;
+                                const maxDuration = currentMission.video_max_duration || 10;
+                                
+                                if (duration > maxDuration) {
+                                    showToast(`Video too long (${duration.toFixed(1)}s). Maximum is ${maxDuration}s.`, 'error');
+                                    toggleVideoRecording(); // Restart recording
+                                } else {
+                                    // Show preview
+                                    const videoPreview = document.getElementById('video-preview');
+                                    videoPreview.src = URL.createObjectURL(blob);
+                                    videoPreview.controls = true;
+                                    videoPreview.style.display = 'block';
+                                    
+                                    // Ask for confirmation
+                                    const mediaControls = document.getElementById('media-controls');
+                                    mediaControls.innerHTML = `
+                                        <button id="submit-video-btn" style="padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; background: var(--primary); color: var(--background);">
+                                            <i class="fas fa-check"></i> Submit Video (${duration.toFixed(1)}s)
+                                        </button>
+                                        <button id="retake-video-btn" style="padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; background: var(--card); color: var(--text);">
+                                            <i class="fas fa-redo"></i> Retake
+                                        </button>
+                                    `;
+                                    
+                                    document.getElementById('submit-video-btn').addEventListener('click', () => submitMissionMedia(blob, 'video'));
+                                    document.getElementById('retake-video-btn').addEventListener('click', () => {
+                                        videoPreview.style.display = 'none';
+                                        document.getElementById('video-preview').style.display = 'block';
+                                        showVideoMission(currentMission);
+                                    });
+                                }
+                            };
+                        };
+                        
+                        mediaRecorder.start();
+                        recordBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Recording';
+                        recordBtn.style.background = 'var(--danger)';
+                        
+                        // Show recording indicator
+                        document.getElementById('recording-indicator').style.display = 'flex';
+                        document.getElementById('media-timer').style.display = 'block';
+                        
+                        // Start timer
+                        recordingSeconds = 0;
+                        recordingTimer = setInterval(() => {
+                            recordingSeconds++;
+                            const minutes = Math.floor(recordingSeconds / 60);
+                            const seconds = recordingSeconds % 60;
+                            document.getElementById('media-timer').textContent = 
+                                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                            
+                            // Auto-stop at max duration
+                            const maxDuration = currentMission.video_max_duration || 10;
+                            if (recordingSeconds >= maxDuration) {
+                                toggleVideoRecording();
+                            }
+                        }, 1000);
+                        
+                    } catch (error) {
+                        console.error('MediaRecorder error:', error);
+                        showToast('Video recording not supported', 'error');
+                    }
+                }
+            }
+            
+            function toggleAudioRecording() {
+                const recordBtn = document.getElementById('record-audio-btn');
+                
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    // Stop recording
+                    mediaRecorder.stop();
+                    recordBtn.innerHTML = '<i class="fas fa-microphone"></i> Start Recording';
+                    recordBtn.style.background = 'var(--card)';
+                    
+                    // Hide recording indicator
+                    document.getElementById('recording-indicator').style.display = 'none';
+                    document.getElementById('media-timer').style.display = 'none';
+                    clearInterval(recordingTimer);
+                } else {
+                    // Start recording
+                    recordedChunks = [];
+                    const options = { mimeType: 'audio/webm' };
+                    
+                    try {
+                        mediaRecorder = new MediaRecorder(mediaStream, options);
+                        
+                        mediaRecorder.ondataavailable = (event) => {
+                            if (event.data.size > 0) {
+                                recordedChunks.push(event.data);
+                            }
+                        };
+                        
+                        mediaRecorder.onstop = async () => {
+                            console.log('Audio recording stopped');
+                            const blob = new Blob(recordedChunks, { type: options.mimeType });
+                            
+                            // Check duration
+                            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                            const arrayBuffer = await blob.arrayBuffer();
+                            const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                            const duration = audioBuffer.duration;
+                            const maxDuration = currentMission.video_max_duration || 10;
+                            
+                            if (duration > maxDuration) {
+                                showToast(`Audio too long (${duration.toFixed(1)}s). Maximum is ${maxDuration}s.`, 'error');
+                                toggleAudioRecording();
+                            } else {
+                                // Ask for confirmation
+                                const mediaControls = document.getElementById('media-controls');
+                                mediaControls.innerHTML = `
+                                    <button id="submit-audio-btn" style="padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; background: var(--primary); color: var(--background);">
+                                        <i class="fas fa-check"></i> Submit Audio (${duration.toFixed(1)}s)
+                                    </button>
+                                    <button id="retake-audio-btn" style="padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; background: var(--card); color: var(--text);">
+                                        <i class="fas fa-redo"></i> Retake
+                                    </button>
+                                `;
+                                
+                                document.getElementById('submit-audio-btn').addEventListener('click', () => submitMissionMedia(blob, 'audio'));
+                                document.getElementById('retake-audio-btn').addEventListener('click', () => {
+                                    showAudioMission(currentMission);
+                                });
+                            }
+                        };
+                        
+                        mediaRecorder.start();
+                        recordBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Recording';
+                        recordBtn.style.background = 'var(--danger)';
+                        
+                        // Show recording indicator
+                        document.getElementById('recording-indicator').style.display = 'flex';
+                        document.getElementById('media-timer').style.display = 'block';
+                        
+                        // Start timer
+                        recordingSeconds = 0;
+                        recordingTimer = setInterval(() => {
+                            recordingSeconds++;
+                            const minutes = Math.floor(recordingSeconds / 60);
+                            const seconds = recordingSeconds % 60;
+                            document.getElementById('media-timer').textContent = 
+                                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                            
+                            // Auto-stop at max duration
+                            const maxDuration = currentMission.video_max_duration || 10;
+                            if (recordingSeconds >= maxDuration) {
+                                toggleAudioRecording();
+                            }
+                        }, 1000);
+                        
+                    } catch (error) {
+                        console.error('MediaRecorder error:', error);
+                        showToast('Audio recording not supported', 'error');
+                    }
+                }
+            }
+            
+            async function submitMissionMedia(blob, mediaType) {
+                if (!currentMission || !currentUser) return;
+                
+                console.log(`Submitting ${mediaType} for mission: ${currentMission.id}`);
+                
+                try {
+                    // Upload file to Supabase Storage
+                    const fileName = `mission_${currentMission.id}_${Date.now()}.${mediaType === 'image' ? 'jpg' : mediaType === 'video' ? 'mp4' : 'webm'}`;
+                    const filePath = `${currentUser.id}/${fileName}`;
+                    
+                    const { error: uploadError } = await supabase.storage
+                        .from('submissions')
+                        .upload(filePath, blob);
+                    
+                    if (uploadError) {
+                        throw new Error('File upload failed: ' + uploadError.message);
+                    }
+                    
+                    // Get public URL
+                    const { data: urlData } = supabase.storage
+                        .from('submissions')
+                        .getPublicUrl(filePath);
+                    
+                    // Create submission record
+                    const { error: submissionError } = await supabase
+                        .from('submissions')
+                        .insert([{
+                            user_id: currentUser.id,
+                            mission_id: currentMission.id,
+                            file_url: urlData.publicUrl,
+                            file_type: mediaType,
+                            review_status: 'pending',
+                            created_at: new Date().toISOString()
+                        }]);
+                    
+                    if (submissionError) {
+                        throw new Error('Submission failed: ' + submissionError.message);
+                    }
+                    
+                    // Update user mission status to pending
+                    const { error: missionError } = await supabase
+                        .from('user_missions')
+                        .update({ 
+                            status: 'pending',
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('user_id', currentUser.id)
+                        .eq('mission_id', currentMission.id);
+                    
+                    showToast('Mission submitted for review!', 'success');
+                    closeMediaModal();
+                    
+                    // Reload missions
+                    if (currentZone) {
+                        loadMissionsForZone(currentZone.id);
+                    }
+                    
+                } catch (error) {
+                    console.error('Submission error:', error);
+                    showToast(error.message, 'error');
+                }
+            }
+            
+            async function submitTextAnswer() {
+                const answer = document.getElementById('text-answer-input').value.trim();
+                if (!answer || !currentMission || !currentUser) return;
+                
+                console.log('Submitting text answer:', answer.substring(0, 50) + '...');
+                
+                try {
+                    // Create submission record for text
+                    const { error: submissionError } = await supabase
+                        .from('submissions')
+                        .insert([{
+                            user_id: currentUser.id,
+                            mission_id: currentMission.id,
+                            text_answer: answer,
+                            file_type: 'text',
+                            review_status: 'pending',
+                            created_at: new Date().toISOString()
+                        }]);
+                    
+                    if (submissionError) {
+                        throw new Error('Submission failed: ' + submissionError.message);
+                    }
+                    
+                    // Update user mission status to pending
+                    const { error: missionError } = await supabase
+                        .from('user_missions')
+                        .update({ 
+                            status: 'pending',
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('user_id', currentUser.id)
+                        .eq('mission_id', currentMission.id);
+                    
+                    showToast('Answer submitted for review!', 'success');
+                    closeTextModal();
+                    
+                    // Reload missions
+                    if (currentZone) {
+                        loadMissionsForZone(currentZone.id);
+                    }
+                    
+                } catch (error) {
+                    console.error('Text submission error:', error);
+                    showToast(error.message, 'error');
+                }
+            }
+            
+            function startGPSChecking() {
+                if (!currentMission.targetLocation) return;
+                
+                const checkInterval = setInterval(() => {
+                    if (!userLocation) return;
+                    
+                    const distance = getDistance(
+                        userLocation.lat,
+                        userLocation.lng,
+                        currentMission.targetLocation.lat,
+                        currentMission.targetLocation.lng
+                    );
+                    
+                    const targetRadius = currentMission.targetLocation.radius || 50;
+                    const progress = Math.max(0, 100 - (distance / targetRadius * 100));
+                    
+                    // Update UI
+                    document.getElementById('gps-distance').textContent = `${distance.toFixed(1)}m`;
+                    document.getElementById('gps-progress-bar').style.width = `${progress}%`;
+                    
+                    // Enable/disable check-in button
+                    const checkInBtn = document.getElementById('check-in-btn');
+                    if (distance <= targetRadius) {
+                        checkInBtn.disabled = false;
+                        checkInBtn.style.background = 'var(--success)';
+                        document.getElementById('gps-status').textContent = 'You are in the target area!';
+                        document.getElementById('gps-status').style.color = 'var(--success)';
+                    } else {
+                        checkInBtn.disabled = true;
+                        checkInBtn.style.background = 'var(--primary)';
+                        document.getElementById('gps-status').textContent = `Move closer (within ${targetRadius}m)`;
+                        document.getElementById('gps-status').style.color = 'var(--text-secondary)';
+                    }
+                }, 1000);
+                
+                // Store interval ID for cleanup
+                currentMission.gpsInterval = checkInterval;
+            }
+            
+            async function submitGPSCheckin() {
+                if (!currentMission || !currentUser) return;
+                
+                console.log('Submitting GPS check-in');
+                
+                try {
+                    // Create submission record for GPS
+                    const { error: submissionError } = await supabase
+                        .from('submissions')
+                        .insert([{
+                            user_id: currentUser.id,
+                            mission_id: currentMission.id,
+                            gps_location: userLocation,
+                            file_type: 'gps',
+                            review_status: 'pending',
+                            created_at: new Date().toISOString()
+                        }]);
+                    
+                    if (submissionError) {
+                        throw new Error('GPS check-in failed: ' + submissionError.message);
+                    }
+                    
+                    // Update user mission status to pending
+                    const { error: missionError } = await supabase
+                        .from('user_missions')
+                        .update({ 
+                            status: 'pending',
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('user_id', currentUser.id)
+                        .eq('mission_id', currentMission.id);
+                    
+                    showToast('GPS check-in submitted for review!', 'success');
+                    closeGPSModal();
+                    
+                    // Reload missions
+                    if (currentZone) {
+                        loadMissionsForZone(currentZone.id);
+                    }
+                    
+                } catch (error) {
+                    console.error('GPS check-in error:', error);
+                    showToast(error.message, 'error');
+                }
+            }
+            
+            // ============================================
+            // MODAL MANAGEMENT
+            // ============================================
+            
+            function closeMediaModal() {
+                // Stop media stream
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach(track => track.stop());
+                    mediaStream = null;
+                }
+                
+                // Stop recording if active
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    mediaRecorder.stop();
+                }
+                
+                // Clear timer
+                if (recordingTimer) {
+                    clearInterval(recordingTimer);
+                    recordingTimer = null;
+                }
+                
+                // Hide modal
+                document.getElementById('media-modal').style.display = 'none';
+                currentMission = null;
+            }
+            
+            function closeQRModal() {
+                document.getElementById('qr-modal').style.display = 'none';
+                currentMission = null;
+            }
+            
+            function closeTextModal() {
+                document.getElementById('text-modal').style.display = 'none';
+                currentMission = null;
+            }
+            
+            function closeGPSModal() {
+                // Clear GPS checking interval
+                if (currentMission && currentMission.gpsInterval) {
+                    clearInterval(currentMission.gpsInterval);
+                }
+                
+                document.getElementById('gps-modal').style.display = 'none';
+                currentMission = null;
+            }
+            
+            function closeEmergencyModal() {
+                document.getElementById('emergency-modal').style.display = 'none';
             }
             
             // ============================================
             // AUTH FUNCTIONS
             // ============================================
             
-            // Check existing session on load
-            checkSession();
-
-            async function checkSession() {
-                console.log('Checking for existing session...');
-                const { data: { session } } = await supabase.auth.getSession();
-                if (session) {
-                    console.log('Session found:', session.user.email);
-                    currentSession = session;
-                    await loadUserProfile(session.user.id);
-                    showApp();
-                } else {
-                    console.log('No session found');
-                }
-            }
-
             function showLogin() {
                 console.log('Showing login form');
                 document.getElementById('login-form').style.display = 'block';
@@ -2039,17 +3129,7 @@
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
 
                 try {
-                    // 1. Check if user already exists in auth
-                    const { data: existingUser } = await supabase.auth.signInWithPassword({
-                        email,
-                        password: 'dummy_password' // Just to check if user exists
-                    }).catch(() => ({ data: { user: null } }));
-
-                    if (existingUser?.user) {
-                        throw new Error('This email is already registered. Please sign in instead.');
-                    }
-
-                    // 2. Sign up with Supabase Auth
+                    // Sign up with Supabase Auth
                     const { data: authData, error: authError } = await supabase.auth.signUp({
                         email,
                         password,
@@ -2068,19 +3148,15 @@
                         throw new Error(authError.message);
                     }
 
-                    // 3. Upload profile photo if provided
+                    // Upload profile photo if provided
                     let avatarUrl = null;
                     if (photoFile) {
                         console.log('Uploading profile photo...');
                         try {
-                            // Create profiles bucket if it doesn't exist
                             const fileName = `${authData.user.id}/profile_${Date.now()}.jpg`;
                             const { error: uploadError } = await supabase.storage
                                 .from('profiles')
-                                .upload(fileName, photoFile, {
-                                    cacheControl: '3600',
-                                    upsert: false
-                                });
+                                .upload(fileName, photoFile);
                             
                             if (!uploadError) {
                                 const { data: urlData } = supabase.storage
@@ -2091,11 +3167,10 @@
                             }
                         } catch (uploadError) {
                             console.warn('Failed to upload profile photo:', uploadError);
-                            // Continue without photo
                         }
                     }
 
-                    // 4. Create user profile in database (with error handling for duplicates)
+                    // Create user profile in database
                     const { error: profileError } = await supabase
                         .from('users')
                         .upsert([{
@@ -2104,36 +3179,28 @@
                             email,
                             phone,
                             avatar_url: avatarUrl,
-                            coins: 100, // Starting coins
+                            coins: 100,
                             created_at: new Date().toISOString(),
                             updated_at: new Date().toISOString()
                         }], {
-                            onConflict: 'id',
-                            ignoreDuplicates: false
+                            onConflict: 'id'
                         });
 
                     if (profileError) {
-                        console.warn('Profile upsert error (may already exist):', profileError.message);
-                        // Continue anyway - user might have been created by trigger
+                        console.warn('Profile upsert error:', profileError.message);
                     }
 
-                    // 5. Set default role as player (with error handling)
+                    // Set default role as player
                     try {
-                        const { error: roleError } = await supabase
+                        await supabase
                             .from('user_roles')
                             .upsert([{
                                 user_id: authData.user.id,
                                 role: 'player',
-                                granted_at: new Date().toISOString(),
-                                updated_at: new Date().toISOString()
+                                granted_at: new Date().toISOString()
                             }], {
-                                onConflict: 'user_id',
-                                ignoreDuplicates: false
+                                onConflict: 'user_id'
                             });
-
-                        if (roleError) {
-                            console.warn('Role assignment error (may already exist):', roleError.message);
-                        }
                     } catch (roleError) {
                         console.warn('Role assignment failed:', roleError);
                     }
@@ -2168,28 +3235,6 @@
 
                 if (error) {
                     console.error('Error loading user profile:', error);
-                    // Try to create profile if it doesn't exist
-                    const { data: userData } = await supabase.auth.getUser();
-                    if (userData.user) {
-                        const user = userData.user;
-                        const { error: insertError } = await supabase
-                            .from('users')
-                            .upsert([{
-                                id: user.id,
-                                name: user.user_metadata?.name || 'User',
-                                email: user.email,
-                                phone: user.user_metadata?.phone || '',
-                                coins: 100,
-                                created_at: new Date().toISOString(),
-                                updated_at: new Date().toISOString()
-                            }], {
-                                onConflict: 'id'
-                            });
-                        
-                        if (!insertError) {
-                            return await loadUserProfile(userId);
-                        }
-                    }
                     return;
                 }
 
@@ -2252,7 +3297,10 @@
             function showApp() {
                 console.log('Showing main app');
                 document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('app-container').style.display = 'block';
+                document.getElementById('app-container').style.display = 'flex';
+                
+                // Restore tab state
+                showTab(currentTab, false);
                 
                 // Initialize map after DOM is visible
                 if (!map) {
@@ -2305,360 +3353,6 @@
                         }
                     }, 300);
                 }, 5000);
-            }
-
-            // ============================================
-            // LOCATION & GEOFENCING FUNCTIONS
-            // ============================================
-            
-            function requestLocationPermission() {
-                console.log('Requesting location permission...');
-                document.getElementById('location-permission').style.display = 'block';
-                
-                if ('geolocation' in navigator) {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            userLocation = {
-                                lat: position.coords.latitude,
-                                lng: position.coords.longitude,
-                                accuracy: position.coords.accuracy
-                            };
-                            console.log('Location obtained:', userLocation);
-                            document.getElementById('location-permission').style.display = 'none';
-                            updateUserLocationOnMap();
-                            checkZones();
-                            startGeofencing();
-                        },
-                        (error) => {
-                            console.warn('Location permission denied:', error);
-                            document.getElementById('location-permission').innerHTML = `
-                                <p>Location access is required for full functionality.</p>
-                                <button id="request-location-btn">Enable Location</button>
-                                <p style="margin-top: 12px; font-size: 12px; color: var(--text-secondary);">
-                                    You can still use the app, but zones and missions won't work properly.
-                                </p>
-                            `;
-                            document.getElementById('request-location-btn').addEventListener('click', requestLocationPermission);
-                            
-                            // Use default location for testing
-                            userLocation = { lat: -22.68, lng: 17.08, accuracy: 10000 };
-                            showToast('Using default location. Enable location for accurate zone detection.', 'warning');
-                        },
-                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                    );
-                    
-                    // Watch position for real-time updates
-                    window.geoWatchId = navigator.geolocation.watchPosition(
-                        (position) => {
-                            userLocation = {
-                                lat: position.coords.latitude,
-                                lng: position.coords.longitude,
-                                accuracy: position.coords.accuracy
-                            };
-                            updateUserLocationOnMap();
-                            checkZones();
-                        },
-                        (error) => console.error('Location watch error:', error),
-                        { enableHighAccuracy: true, maximumAge: 30000, timeout: 5000 }
-                    );
-                } else {
-                    console.warn('Geolocation not supported');
-                    document.getElementById('location-permission').innerHTML = `
-                        <p>Geolocation is not supported in your browser.</p>
-                        <p style="margin-top: 12px; font-size: 12px; color: var(--text-secondary);">
-                            You can still use the app, but zones and missions won't work properly.
-                        </p>
-                    `;
-                    userLocation = { lat: -22.68, lng: 17.08, accuracy: 10000 };
-                }
-            }
-
-            async function startGeofencing() {
-                console.log('Starting geofencing...');
-                checkZones();
-                // Check zones every 30 seconds
-                setInterval(checkZones, 30000);
-            }
-
-            async function checkZones() {
-                if (!userLocation || !zones.length) {
-                    console.log('No location or zones available for zone check');
-                    return;
-                }
-                
-                console.log('Checking zones...');
-                let currentZoneFound = null;
-                
-                zones.forEach(zone => {
-                    if (!zone.coordinates || !zone.coordinates.lat || !zone.coordinates.lng) {
-                        return;
-                    }
-                    
-                    const distance = getDistance(
-                        userLocation.lat,
-                        userLocation.lng,
-                        zone.coordinates.lat,
-                        zone.coordinates.lng
-                    );
-                    
-                    console.log(`Distance to ${zone.name}: ${distance}m (radius: ${zone.radius_meters || 100}m)`);
-                    
-                    if (distance <= (zone.radius_meters || 100)) {
-                        if (currentZone?.id !== zone.id) {
-                            // Entered new zone
-                            console.log(`Entered zone: ${zone.name}`);
-                            unlockZoneMissions(zone.id);
-                            showToast(`Entered ${zone.name}! Missions unlocked.`, 'success');
-                            currentZoneFound = zone;
-                        }
-                    }
-                });
-                
-                currentZone = currentZoneFound;
-                updateCurrentZoneDisplay();
-            }
-
-            function getDistance(lat1, lon1, lat2, lon2) {
-                const R = 6371e3; // Earth radius in meters
-                const φ1 = lat1 * Math.PI/180;
-                const φ2 = lat2 * Math.PI/180;
-                const Δφ = (lat2-lat1) * Math.PI/180;
-                const Δλ = (lon2-lon1) * Math.PI/180;
-                
-                const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-                          Math.cos(φ1) * Math.cos(φ2) *
-                          Math.sin(Δλ/2) * Math.sin(Δλ/2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                
-                return R * c;
-            }
-
-            function updateCurrentZoneDisplay() {
-                const zoneElement = document.getElementById('current-zone');
-                if (currentZone) {
-                    zoneElement.innerHTML = `
-                        <h4 style="margin-bottom: 8px; color: var(--primary); font-size: 16px;">${currentZone.name}</h4>
-                        <p style="color: var(--text-secondary); font-size: 13px;">
-                            ${currentZone.description || 'Complete missions in this area to earn coins!'}
-                        </p>
-                    `;
-                } else {
-                    zoneElement.innerHTML = `
-                        <p style="color: var(--text-secondary); font-size: 13px;">Not in any zone. Move to a marked area to unlock missions.</p>
-                    `;
-                }
-            }
-
-            // ============================================
-            // MISSION FUNCTIONS
-            // ============================================
-            
-            async function unlockZoneMissions(zoneId) {
-                console.log(`Unlocking missions for zone: ${zoneId}`);
-                if (!currentUser) return;
-                
-                const { data: missions, error } = await supabase
-                    .from('missions')
-                    .select('*')
-                    .eq('zone_id', zoneId)
-                    .eq('status', 'active');
-                
-                if (error || !missions) {
-                    console.error('Error loading missions:', error);
-                    return;
-                }
-                
-                console.log(`Found ${missions.length} missions in zone`);
-                
-                if (missions.length > 0) {
-                    for (const mission of missions) {
-                        // Check if user mission already exists
-                        const { data: existing } = await supabase
-                            .from('user_missions')
-                            .select('*')
-                            .eq('user_id', currentUser.id)
-                            .eq('mission_id', mission.id)
-                            .single();
-                        
-                        if (!existing) {
-                            // Create unlocked user mission
-                            console.log(`Creating user mission for: ${mission.title}`);
-                            const { error: insertError } = await supabase
-                                .from('user_missions')
-                                .upsert([{
-                                    user_id: currentUser.id,
-                                    mission_id: mission.id,
-                                    status: 'unlocked',
-                                    created_at: new Date().toISOString(),
-                                    updated_at: new Date().toISOString()
-                                }], {
-                                    onConflict: 'user_id,mission_id'
-                                });
-                            
-                            if (insertError) {
-                                console.error('Error creating user mission:', insertError);
-                            }
-                        } else if (existing.status === 'locked') {
-                            // Update locked mission to unlocked
-                            console.log(`Unlocking existing mission: ${mission.title}`);
-                            await supabase
-                                .from('user_missions')
-                                .update({ 
-                                    status: 'unlocked',
-                                    updated_at: new Date().toISOString()
-                                })
-                                .eq('id', existing.id);
-                        }
-                    }
-                    
-                    // Reload missions for current zone
-                    if (document.getElementById('missions-tab').classList.contains('active')) {
-                        loadMissionsForZone(zoneId);
-                    }
-                }
-            }
-
-            async function loadZones() {
-                console.log('Loading zones...');
-                const { data: zonesData, error } = await supabase
-                    .from('zones')
-                    .select('*')
-                    .eq('is_active', true)
-                    .order('name');
-                
-                const zoneList = document.getElementById('zone-list');
-                
-                if (error) {
-                    console.error('Error loading zones:', error);
-                    zoneList.innerHTML = '<p style="color: var(--text-secondary); padding: 20px; text-align: center; font-size: 13px;">Error loading zones.</p>';
-                    return;
-                }
-                
-                if (!zonesData || zonesData.length === 0) {
-                    zoneList.innerHTML = '<p style="color: var(--text-secondary); padding: 20px; text-align: center; font-size: 13px;">No zones available yet.</p>';
-                    console.log('No zones found');
-                    return;
-                }
-                
-                console.log(`Loaded ${zonesData.length} zones`);
-                zones = zonesData;
-                
-                zoneList.innerHTML = '';
-                zonesData.forEach((zone, index) => {
-                    const zoneEl = document.createElement('div');
-                    zoneEl.className = 'zone-item';
-                    if (index === 0) zoneEl.classList.add('active');
-                    zoneEl.textContent = zone.name;
-                    zoneEl.addEventListener('click', () => {
-                        document.querySelectorAll('.zone-item').forEach(item => item.classList.remove('active'));
-                        zoneEl.classList.add('active');
-                        loadMissionsForZone(zone.id);
-                    });
-                    zoneList.appendChild(zoneEl);
-                });
-                
-                // Load missions for first zone
-                if (zonesData.length > 0) {
-                    loadMissionsForZone(zonesData[0].id);
-                }
-            }
-
-            async function loadMissionsForZone(zoneId) {
-                console.log(`Loading missions for zone: ${zoneId}`);
-                const missionsList = document.getElementById('missions-list');
-                missionsList.innerHTML = '<div class="spinner" style="margin: 40px auto;"></div>';
-                
-                const { data: missions, error } = await supabase
-                    .from('missions')
-                    .select(`
-                        *,
-                        user_missions (
-                            status,
-                            completed_at,
-                            earned_coins
-                        )
-                    `)
-                    .eq('zone_id', zoneId)
-                    .eq('status', 'active')
-                    .order('created_at');
-                
-                if (error) {
-                    console.error('Error loading missions:', error);
-                    missionsList.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <p>Error loading missions.</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                if (!missions || missions.length === 0) {
-                    missionsList.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <p>No missions available in this zone yet.</p>
-                        </div>
-                    `;
-                    console.log('No missions found in zone');
-                    return;
-                }
-                
-                console.log(`Loaded ${missions.length} missions`);
-                missionsList.innerHTML = '';
-                
-                missions.forEach(mission => {
-                    const userMission = mission.user_missions?.[0];
-                    const status = userMission?.status || 'locked';
-                    const isCompleted = status === 'completed';
-                    const isUnlocked = status === 'unlocked' || status === 'pending';
-                    
-                    const missionCard = document.createElement('div');
-                    missionCard.className = `mission-card ${status}`;
-                    if (status === 'locked') missionCard.classList.add('locked');
-                    if (isCompleted) missionCard.classList.add('completed');
-                    if (isUnlocked) missionCard.classList.add('unlocked');
-                    
-                    missionCard.innerHTML = `
-                        <div class="mission-header">
-                            <div class="mission-title">${mission.title}</div>
-                            <div class="mission-points">${mission.points} coins</div>
-                        </div>
-                        ${mission.question ? `<div class="mission-question">${mission.question}</div>` : ''}
-                        ${mission.description ? `<div class="mission-description">${mission.description}</div>` : ''}
-                        <div class="mission-actions">
-                            ${isCompleted ? `
-                                <button class="action-btn completed" disabled>
-                                    <i class="fas fa-check"></i> Completed
-                                    ${userMission.earned_coins ? ` (+${userMission.earned_coins} coins)` : ''}
-                                </button>
-                            ` : isUnlocked ? `
-                                <button class="action-btn record start-mission-btn" data-mission-id="${mission.id}">
-                                    <i class="fas fa-play"></i> Start Mission
-                                </button>
-                            ` : `
-                                <button class="action-btn" disabled>
-                                    <i class="fas fa-lock"></i> Locked
-                                </button>
-                            `}
-                        </div>
-                    `;
-                    missionsList.appendChild(missionCard);
-                });
-                
-                // Add event listeners to start mission buttons
-                document.querySelectorAll('.start-mission-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const missionId = this.getAttribute('data-mission-id');
-                        startMission(missionId);
-                    });
-                });
-            }
-
-            async function startMission(missionId) {
-                console.log(`Starting mission: ${missionId}`);
-                showToast('Mission functionality coming soon!', 'info');
-                // Mission media capture will be implemented later
             }
 
             // ============================================
@@ -2726,16 +3420,16 @@
                         <div class="prize-image" style="display:flex;align-items:center;justify-content:center;color:var(--text-secondary);">
                             <i class="fas fa-gift" style="font-size:48px;"></i>
                         </div>
-                        <div class="prize-content">
-                            <h4 class="prize-title">${prize.name}</h4>
-                            <p class="prize-description">${prize.description || 'No description available'}</p>
-                            <div class="prize-price">
+                        <div class="prize-content" style="padding: 12px;">
+                            <h4 class="prize-title" style="font-size: 14px; font-weight: 600; margin-bottom: 4px; line-height: 1.3; color: var(--primary);">${prize.name}</h4>
+                            <p class="prize-description" style="color: var(--text-secondary); font-size: 12px; margin-bottom: 8px; line-height: 1.4;">${prize.description || 'No description available'}</p>
+                            <div class="prize-price" style="display: flex; align-items: center; gap: 4px; font-weight: 600; color: var(--accent); margin-bottom: 4px;">
                                 <i class="fas fa-coins"></i>
                                 <span>${prize.price}</span> coins
                             </div>
-                            <div class="inventory-info ${inventoryClass}">${inventoryText}</div>
+                            <div class="inventory-info ${inventoryClass}" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 8px;">${inventoryText}</div>
                             <button class="buy-btn" data-prize-id="${prize.id}" 
-                                    ${isSoldOut || !canAfford ? 'disabled' : ''}>
+                                    ${isSoldOut || !canAfford ? 'disabled' : ''} style="width: 100%; padding: 8px; background: var(--primary); border: none; border-radius: 6px; color: var(--background); font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 13px;">
                                 ${isSoldOut ? 'Sold Out' : !canAfford ? `Need ${prize.price - currentUser.coins} more coins` : 'Buy Now'}
                             </button>
                         </div>
@@ -2771,9 +3465,92 @@
 
             async function showPurchaseModal(prizeId) {
                 console.log('Showing purchase modal for prize:', prizeId);
-                showToast('Purchase functionality coming soon!', 'info');
+                
+                // Load prize details
+                const { data: prize, error } = await supabase
+                    .from('prizes')
+                    .select('*')
+                    .eq('id', prizeId)
+                    .single();
+                
+                if (error || !prize) {
+                    showToast('Prize not found', 'error');
+                    return;
+                }
+                
+                // Check if user can afford
+                if (!currentUser || currentUser.coins < prize.price) {
+                    showToast(`You need ${prize.price - currentUser.coins} more coins to buy this`, 'error');
+                    return;
+                }
+                
+                // Check if prize is in stock
+                if (prize.remaining_quantity <= 0) {
+                    showToast('This prize is sold out', 'error');
+                    return;
+                }
+                
+                // Ask for confirmation
+                if (confirm(`Buy ${prize.name} for ${prize.price} coins?`)) {
+                    try {
+                        // Start transaction
+                        const { error: purchaseError } = await supabase
+                            .from('purchases')
+                            .insert([{
+                                user_id: currentUser.id,
+                                prize_id: prize.id,
+                                price_paid: prize.price,
+                                status: 'completed',
+                                created_at: new Date().toISOString()
+                            }]);
+                        
+                        if (purchaseError) throw purchaseError;
+                        
+                        // Update prize quantity
+                        const { error: prizeError } = await supabase
+                            .from('prizes')
+                            .update({ remaining_quantity: prize.remaining_quantity - 1 })
+                            .eq('id', prize.id);
+                        
+                        if (prizeError) throw prizeError;
+                        
+                        // Update user coins
+                        const newCoins = currentUser.coins - prize.price;
+                        const { error: userError } = await supabase
+                            .from('users')
+                            .update({ coins: newCoins })
+                            .eq('id', currentUser.id);
+                        
+                        if (userError) throw userError;
+                        
+                        // Update local state
+                        currentUser.coins = newCoins;
+                        updateCoinDisplay();
+                        
+                        // Add to inventory
+                        const { error: inventoryError } = await supabase
+                            .from('user_inventory')
+                            .insert([{
+                                user_id: currentUser.id,
+                                prize_id: prize.id,
+                                item_name: prize.name,
+                                status: 'active',
+                                acquired_at: new Date().toISOString()
+                            }]);
+                        
+                        showToast(`Purchased ${prize.name}! Check your inventory.`, 'success');
+                        
+                        // Reload shop and inventory
+                        loadShopItems();
+                        loadUserInventory();
+                        
+                    } catch (error) {
+                        console.error('Purchase error:', error);
+                        showToast('Purchase failed: ' + error.message, 'error');
+                    }
+                }
             }
-
+            
             // ============================================
             // INVENTORY FUNCTIONS
             // ============================================
@@ -2825,10 +3602,10 @@
                         <div style="width:56px;height:56px;background:var(--background);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);">
                             <i class="fas fa-gift" style="font-size:24px;"></i>
                         </div>
-                        <div class="item-info">
-                            <h5>${item.item_name}</h5>
-                            <span class="item-status status-${item.status}">${item.status.charAt(0).toUpperCase() + item.status.slice(1)}</span>
-                            <p class="item-date">Acquired: ${new Date(item.acquired_at).toLocaleDateString()}</p>
+                        <div class="item-info" style="flex: 1;">
+                            <h5 style="font-size: 14px; margin-bottom: 4px; color: var(--primary);">${item.item_name}</h5>
+                            <span class="item-status status-${item.status}" style="font-size: 11px; padding: 2px 8px; border-radius: 12px; display: inline-block; margin-bottom: 4px; font-weight: 600; background: ${item.status === 'active' ? 'rgba(68, 255, 68, 0.15)' : 'rgba(136, 136, 136, 0.15)'}; color: ${item.status === 'active' ? 'var(--success)' : 'var(--text-secondary)'};">${item.status.charAt(0).toUpperCase() + item.status.slice(1)}</span>
+                            <p class="item-date" style="font-size: 11px; color: var(--text-secondary);">Acquired: ${new Date(item.acquired_at).toLocaleDateString()}</p>
                             ${item.notes ? `<p style="font-size:11px;color:var(--text-secondary);margin-top:4px;">${item.notes}</p>` : ''}
                         </div>
                     `;
@@ -2859,8 +3636,7 @@
                 console.log('Loading leaderboard:', type);
                 
                 // Update active button
-                const buttons = document.querySelectorAll('#leaderboard-filters .leaderboard-btn');
-                buttons.forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('#leaderboard-filters .leaderboard-btn').forEach(btn => btn.classList.remove('active'));
                 event.target.classList.add('active');
                 
                 const myRankCard = document.getElementById('my-rank-card');
@@ -2899,18 +3675,20 @@
                         
                         if (myRank) {
                             myRankCard.innerHTML = `
-                                <div style="width:48px;height:48px;border-radius:50%;background:var(--background);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div class="my-rank-info">
-                                    <h3>Rank #${myRank.rank}</h3>
-                                    <p>${myRank.name}</p>
-                                    <p><i class="fas fa-coins" style="color:var(--accent);margin-right:5px;"></i> ${myRank.coins} coins</p>
+                                <div class="my-rank-card" style="background: var(--card); border-radius: 10px; padding: 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; border: 1px solid var(--border);">
+                                    <div style="width:48px;height:48px;border-radius:50%;background:var(--background);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="my-rank-info" style="flex: 1;">
+                                        <h3 style="font-size: 18px; margin-bottom: 4px; color: var(--primary);">Rank #${myRank.rank}</h3>
+                                        <p style="font-size: 13px; color: var(--text-secondary);">${myRank.name}</p>
+                                        <p style="font-size: 13px; color: var(--text-secondary);"><i class="fas fa-coins" style="color:var(--accent);margin-right:5px;"></i> ${myRank.coins} coins</p>
+                                    </div>
                                 </div>
                             `;
                         } else {
                             myRankCard.innerHTML = `
-                                <div style="text-align:center;width:100%;padding:20px;">
+                                <div class="my-rank-card" style="text-align:center;width:100%;padding:20px;">
                                     <p style="color:var(--text-secondary);">Complete missions to appear on the leaderboard!</p>
                                 </div>
                             `;
@@ -2927,13 +3705,15 @@
                             const item = document.createElement('div');
                             item.className = `leaderboard-item ${isMe ? 'my-rank' : ''}`;
                             item.innerHTML = `
-                                <div class="rank-number ${rankClass}">${user.rank}</div>
-                                <div style="width:36px;height:36px;border-radius:50%;background:var(--background);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <div class="leaderboard-info">
-                                    <h4>${user.name} ${isMe ? '(You)' : ''}</h4>
-                                    <p>${user.score || user.coins || 0} coins</p>
+                                <div style="background: var(--card); border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 12px; border: 1px solid var(--border); ${isMe ? 'background: rgba(255, 255, 255, 0.05); border-color: var(--primary);' : ''}">
+                                    <div class="rank-number ${rankClass}" style="font-size: 16px; font-weight: 600; width: 28px; text-align: center; color: ${user.rank === 1 ? '#ffd700' : user.rank === 2 ? '#c0c0c0' : user.rank === 3 ? '#cd7f32' : 'var(--text-secondary)'};">${user.rank}</div>
+                                    <div style="width:36px;height:36px;border-radius:50%;background:var(--background);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="leaderboard-info" style="flex: 1;">
+                                        <h4 style="font-size: 14px; margin-bottom: 2px; color: var(--primary);">${user.name} ${isMe ? '(You)' : ''}</h4>
+                                        <p style="font-size: 11px; color: var(--text-secondary);">${user.score || user.coins || 0} coins</p>
+                                    </div>
                                 </div>
                             `;
                             leaderboardList.appendChild(item);
@@ -2995,15 +3775,23 @@
                 }
             }
 
+            function updateCoinDisplay() {
+                if (!currentUser) return;
+                document.getElementById('user-coins').textContent = currentUser.coins;
+                document.getElementById('shop-coins').textContent = currentUser.coins;
+                document.getElementById('profile-coins').textContent = currentUser.coins;
+            }
+
             function startEventTimer() {
                 console.log('Starting event timer');
                 // Set event end time (24 hours from now)
                 const eventEnd = new Date();
                 eventEnd.setHours(eventEnd.getHours() + 24);
+                eventEndTime = eventEnd;
                 
                 function updateTimer() {
                     const now = new Date();
-                    const diff = eventEnd - now;
+                    const diff = eventEndTime - now;
                     
                     if (diff <= 0) {
                         document.getElementById('event-timer').textContent = 'EVENT ENDED';
@@ -3027,8 +3815,12 @@
             // UI FUNCTIONS
             // ============================================
             
-            function showTab(tabName) {
+            function showTab(tabName, pushState = true) {
                 console.log('Showing tab:', tabName);
+                
+                // Update current tab
+                currentTab = tabName;
+                
                 // Hide all tabs
                 document.querySelectorAll('.tab-container').forEach(tab => {
                     tab.classList.remove('active');
@@ -3049,16 +3841,67 @@
                     }
                 });
                 
-                // Load data if needed
-                if (tabName === 'shop') {
-                    loadShopItems();
-                } else if (tabName === 'inventory') {
-                    loadUserInventory();
-                } else if (tabName === 'leaderboard') {
-                    loadLeaderboard('global');
-                } else if (tabName === 'missions') {
-                    loadZones();
+                // Push to history if requested
+                if (pushState) {
+                    history.pushState({ tab: tabName }, '', `#${tabName}`);
                 }
+                
+                // Load data if needed
+                switch(tabName) {
+                    case 'shop':
+                        loadShopItems();
+                        break;
+                    case 'inventory':
+                        loadUserInventory();
+                        break;
+                    case 'leaderboard':
+                        loadLeaderboard('global');
+                        break;
+                    case 'missions':
+                        loadZones();
+                        break;
+                    case 'map':
+                        if (map) {
+                            setTimeout(() => map.resize(), 100);
+                        }
+                        break;
+                }
+                
+                // Save state
+                saveAppState();
+            }
+
+            function showEmergencyModal() {
+                if (!currentUser || !userLocation) {
+                    showToast('Cannot send emergency without location', 'error');
+                    return;
+                }
+                
+                console.log('Sending SOS alert...');
+                
+                // Create SOS alert in database
+                supabase
+                    .from('sos_alerts')
+                    .insert([{
+                        user_id: currentUser.id,
+                        user_name: currentUser.name,
+                        user_phone: currentUser.phone,
+                        latitude: userLocation.lat,
+                        longitude: userLocation.lng,
+                        accuracy: userLocation.accuracy,
+                        status: 'active',
+                        created_at: new Date().toISOString()
+                    }])
+                    .then(({ error }) => {
+                        if (error) {
+                            console.error('SOS alert failed:', error);
+                            showToast('Emergency alert failed to send', 'error');
+                        } else {
+                            console.log('SOS alert sent successfully');
+                            document.getElementById('emergency-modal').style.display = 'flex';
+                            showToast('Emergency alert sent! Help is on the way.', 'success');
+                        }
+                    });
             }
 
             function editProfile() {
@@ -3076,22 +3919,42 @@
                 showToast('Activity history coming soon!', 'info');
             }
 
-            function showEmergencyModal() {
-                console.log('Showing emergency modal');
-                showToast('Emergency functionality coming soon!', 'info');
+            function cleanupApp() {
+                // Stop location watching
+                if (locationWatchId && navigator.geolocation) {
+                    navigator.geolocation.clearWatch(locationWatchId);
+                    locationWatchId = null;
+                }
+                
+                // Stop geofencing interval
+                if (window.geofenceInterval) {
+                    clearInterval(window.geofenceInterval);
+                    window.geofenceInterval = null;
+                }
+                
+                // Stop media streams
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach(track => track.stop());
+                    mediaStream = null;
+                }
+                
+                // Clear state
+                currentUser = null;
+                currentSession = null;
+                userLocation = null;
+                currentMission = null;
+                currentZone = null;
+                zones = [];
             }
 
             async function logout() {
                 console.log('Logging out...');
-                // Stop geolocation watching
-                if (window.geoWatchId && navigator.geolocation) {
-                    navigator.geolocation.clearWatch(window.geoWatchId);
-                }
+                
+                cleanupApp();
+                clearAppState();
                 
                 const { error } = await supabase.auth.signOut();
                 if (!error) {
-                    currentUser = null;
-                    currentSession = null;
                     document.getElementById('app-container').style.display = 'none';
                     document.getElementById('auth-screen').style.display = 'flex';
                     showLogin();
@@ -3099,6 +3962,10 @@
                 }
             }
 
+            // ============================================
+            // START THE APP
+            // ============================================
+            initApp();
             console.log('App initialization complete!');
         });
     </script>
