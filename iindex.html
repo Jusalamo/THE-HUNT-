@@ -1,0 +1,3394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>The Hunt - Treasure Hunt Adventure</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <style>
+        /* Professional Black/White/Grey Theme */
+        :root {
+            --primary: #ffffff;
+            --primary-dark: #cccccc;
+            --secondary: #666666;
+            --danger: #ff4444;
+            --success: #44ff44;
+            --warning: #ffaa44;
+            --background: #000000;
+            --card: #111111;
+            --border: #333333;
+            --text: #ffffff;
+            --text-secondary: #888888;
+            --accent: #4a90e2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Segoe UI', Arial, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        /* Auth Screens */
+        .auth-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--background) 0%, #1a1a1a 100%);
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card);
+            border-radius: 12px;
+            padding: 40px 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo h1 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .logo p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--background);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--text);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 24px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .auth-switch a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .error-message {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: #ff8888;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            display: none;
+            line-height: 1.4;
+        }
+
+        .success-message {
+            background: rgba(68, 255, 68, 0.1);
+            border: 1px solid var(--success);
+            color: #88ff88;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            display: none;
+            line-height: 1.4;
+        }
+
+        /* Main App */
+        .app-container {
+            display: none;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            z-index: 1000;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid var(--border);
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        .profile-btn i {
+            font-size: 18px;
+        }
+
+        .timer {
+            background: var(--card);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            border: 1px solid var(--border);
+        }
+
+        /* SOS Button */
+        .sos-btn {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--danger);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 20px rgba(255, 68, 68, 0.3);
+            cursor: pointer;
+            z-index: 900;
+            border: none;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
+        }
+
+        /* Map Container */
+        .map-container {
+            margin-top: 64px;
+            height: 50vh;
+            width: 100%;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 16px;
+            padding-bottom: 70px;
+        }
+
+        .tab-container {
+            display: none;
+        }
+
+        .tab-container.active {
+            display: block;
+        }
+
+        /* Missions Tab */
+        .zone-list {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 8px 0;
+            margin-bottom: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .zone-item {
+            flex: 0 0 auto;
+            padding: 10px 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .zone-item.active {
+            background: var(--primary);
+            color: var(--background);
+            border-color: transparent;
+        }
+
+        .mission-card {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .mission-card.completed {
+            border-color: var(--success);
+            background: rgba(68, 255, 68, 0.05);
+        }
+
+        .mission-card.unlocked {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .mission-card.locked {
+            opacity: 0.6;
+        }
+
+        .mission-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .mission-title {
+            font-size: 1rem;
+            font-weight: 600;
+            flex: 1;
+            color: var(--primary);
+        }
+
+        .mission-points {
+            background: var(--accent);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+
+        .mission-question {
+            color: var(--text);
+            margin-bottom: 12px;
+            line-height: 1.5;
+            font-size: 14px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+        }
+
+        .mission-description {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.5;
+            font-size: 13px;
+        }
+
+        .mission-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .action-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .action-btn.record {
+            background: var(--primary);
+            color: var(--background);
+        }
+
+        .action-btn.completed {
+            background: var(--success);
+            color: var(--background);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Shop Tab */
+        .shop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .coins-balance {
+            background: var(--card);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .shop-categories {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 8px 0;
+            margin-bottom: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .category-btn {
+            flex: 0 0 auto;
+            padding: 8px 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+
+        .category-btn.active {
+            background: var(--primary);
+            color: var(--background);
+            border-color: transparent;
+        }
+
+        .prize-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .prize-card {
+            background: var(--card);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .prize-card.sold-out {
+            opacity: 0.5;
+            filter: grayscale(1);
+        }
+
+        .prize-image {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            background: var(--background);
+        }
+
+        .prize-content {
+            padding: 12px;
+        }
+
+        .prize-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            line-height: 1.3;
+            color: var(--primary);
+        }
+
+        .prize-description {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .prize-price {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .inventory-info {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .inventory-info.low-stock {
+            color: var(--warning);
+        }
+
+        .inventory-info.sold-out {
+            color: var(--danger);
+        }
+
+        .buy-btn {
+            width: 100%;
+            padding: 8px;
+            background: var(--primary);
+            border: none;
+            border-radius: 6px;
+            color: var(--background);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .buy-btn:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .buy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: var(--border);
+            color: var(--text-secondary);
+        }
+
+        /* Inventory Tab */
+        .inventory-filters {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 8px 0;
+            margin-bottom: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .filter-btn {
+            flex: 0 0 auto;
+            padding: 8px 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: var(--background);
+            border-color: transparent;
+        }
+
+        .inventory-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .inventory-item {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .inventory-item img {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: var(--background);
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-info h5 {
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: var(--primary);
+        }
+
+        .item-status {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(68, 255, 68, 0.15);
+            color: var(--success);
+        }
+
+        .status-used {
+            background: rgba(136, 136, 136, 0.15);
+            color: var(--text-secondary);
+        }
+
+        .item-date {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 16px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.3;
+        }
+
+        /* Leaderboard Tab */
+        .leaderboard-filters {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 8px 0;
+            margin-bottom: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .leaderboard-btn {
+            flex: 0 0 auto;
+            padding: 8px 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+
+        .leaderboard-btn.active {
+            background: var(--primary);
+            color: var(--background);
+            border-color: transparent;
+        }
+
+        .my-rank-card {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .my-rank-card img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            background: var(--background);
+        }
+
+        .my-rank-info {
+            flex: 1;
+        }
+
+        .my-rank-info h3 {
+            font-size: 18px;
+            margin-bottom: 4px;
+            color: var(--primary);
+        }
+
+        .my-rank-info p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .leaderboard-item {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .leaderboard-item.my-rank {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary);
+        }
+
+        .rank-number {
+            font-size: 16px;
+            font-weight: 600;
+            width: 28px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .rank-1 { color: #ffd700; }
+        .rank-2 { color: #c0c0c0; }
+        .rank-3 { color: #cd7f32; }
+
+        .leaderboard-item img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--background);
+        }
+
+        .leaderboard-info {
+            flex: 1;
+        }
+
+        .leaderboard-info h4 {
+            font-size: 14px;
+            margin-bottom: 2px;
+            color: var(--primary);
+        }
+
+        .leaderboard-info p {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .leaderboard-score {
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        /* Profile Tab */
+        .profile-header {
+            text-align: center;
+            padding: 16px 0;
+        }
+
+        .profile-avatar {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            margin: 0 auto 12px;
+            overflow: hidden;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        .profile-avatar i {
+            font-size: 36px;
+        }
+
+        .profile-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--primary);
+        }
+
+        .profile-email {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-card h4 {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-number {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .profile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .profile-action-btn {
+            padding: 12px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .profile-action-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary);
+        }
+
+        .logout-btn {
+            background: rgba(255, 68, 68, 0.1);
+            border-color: var(--danger);
+            color: #ff8888;
+        }
+
+        /* Media Capture Modal */
+        .media-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .media-container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--card);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid var(--border);
+        }
+
+        .media-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .media-header h3 {
+            font-size: 18px;
+            margin-bottom: 4px;
+            color: var(--primary);
+        }
+
+        .media-header p {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .media-preview {
+            width: 100%;
+            height: 280px;
+            background: var(--background);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        #video-preview, #audio-visualizer {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .recording-indicator {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: var(--danger);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            display: none;
+        }
+
+        .recording-indicator .dot {
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .media-controls {
+            padding: 16px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .media-controls button {
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 13px;
+            background: var(--card);
+            color: var(--text);
+        }
+
+        .media-controls button:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary);
+        }
+
+        .media-timer {
+            position: absolute;
+            bottom: 16px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            display: none;
+        }
+
+        /* Purchase Modal */
+        .purchase-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .purchase-container {
+            width: 100%;
+            max-width: 360px;
+            background: var(--card);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .purchase-container img {
+            width: 140px;
+            height: 140px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin: 0 auto 16px;
+            background: var(--background);
+        }
+
+        .purchase-container h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .purchase-container p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.5;
+            font-size: 13px;
+        }
+
+        .purchase-price {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 24px;
+        }
+
+        .purchase-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .purchase-buttons button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            min-width: 56px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item i {
+            font-size: 18px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 16px;
+            z-index: 2000;
+        }
+
+        .toast {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            min-width: 280px;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast-info {
+            border-left: 4px solid var(--accent);
+        }
+
+        /* Emergency Modal */
+        .emergency-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .emergency-container {
+            width: 100%;
+            max-width: 360px;
+            background: var(--danger);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            color: white;
+            animation: emergencyPulse 1s infinite;
+        }
+
+        @keyframes emergencyPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .emergency-container i {
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+
+        .emergency-container h2 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .emergency-container p {
+            margin-bottom: 16px;
+            line-height: 1.5;
+            opacity: 0.9;
+            font-size: 13px;
+        }
+
+        .emergency-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .emergency-buttons button {
+            padding: 12px;
+            border: 2px solid white;
+            border-radius: 8px;
+            background: transparent;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .emergency-buttons button:hover {
+            background: white;
+            color: var(--danger);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .prize-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .media-controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .purchase-buttons {
+                flex-direction: column;
+            }
+            
+            .logo h1 {
+                font-size: 1.8rem;
+            }
+            
+            .auth-container {
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div id="auth-screen" class="auth-screen">
+        <div class="auth-container">
+            <div class="logo">
+                <h1>THE HUNT</h1>
+                <p>Treasure Hunt Adventure</p>
+            </div>
+            
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+            
+            <!-- Login Form -->
+            <div id="login-form">
+                <h2 style="margin-bottom: 24px; text-align: center; color: var(--primary);">Welcome Back</h2>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="login-email" class="form-control" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button id="login-button" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Sign In
+                </button>
+                <div class="auth-switch">
+                    Don't have an account? <a href="#" id="show-signup-link">Create Account</a>
+                </div>
+            </div>
+            
+            <!-- Signup Form -->
+            <div id="signup-form" style="display: none;">
+                <h2 style="margin-bottom: 24px; text-align: center; color: var(--primary);">Create Account</h2>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="signup-name" class="form-control" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="signup-phone" class="form-control" placeholder="+264 81 234 5678" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="signup-email" class="form-control" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="signup-password" class="form-control" placeholder="••••••••" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label>Profile Photo</label>
+                    <input type="file" id="signup-photo" class="form-control" accept="image/*" capture="user">
+                    <small style="color: var(--text-secondary); font-size: 11px; margin-top: 4px; display: block;">
+                        Take a selfie or upload a clear photo for identification
+                    </small>
+                </div>
+                <button id="signup-button" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i>
+                    Create Account
+                </button>
+                <div class="auth-switch">
+                    Already have an account? <a href="#" id="show-login-link">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app-container" class="app-container">
+                <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <div class="profile-btn" id="profile-button">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="timer" id="event-timer">24:00:00</div>
+            </div>
+            <div class="coins-display" style="display: flex; align-items: center; gap: 5px;">
+                <i class="fas fa-coins" style="color: var(--accent);"></i>
+                <span id="user-coins" style="font-weight: 600;">0</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Map Tab -->
+            <div id="map-tab" class="tab-container active">
+                <div class="map-container">
+                    <div id="map"></div>
+                </div>
+                <div style="padding: 16px;">
+                    <h2 style="margin-bottom: 12px; font-size: 18px; color: var(--primary);">Current Zone</h2>
+                    <div id="current-zone" style="background: var(--card); padding: 12px; border-radius: 8px; margin-bottom: 16px; border: 1px solid var(--border);">
+                        <p style="color: var(--text-secondary); font-size: 13px;">Not in any zone</p>
+                    </div>
+                    <div id="nearby-missions" style="margin-top: 16px;">
+                        <!-- Missions will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Missions Tab -->
+            <div id="missions-tab" class="tab-container">
+                <h2 style="margin-bottom: 12px; font-size: 18px; color: var(--primary);">Missions</h2>
+                <div class="zone-list" id="zone-list">
+                    <!-- Zones will be loaded here -->
+                </div>
+                <div id="missions-list">
+                    <!-- Missions will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Shop Tab -->
+            <div id="shop-tab" class="tab-container">
+                <div class="shop-header">
+                    <h2 style="font-size: 18px; color: var(--primary);">Prize Shop</h2>
+                    <div class="coins-balance">
+                        <i class="fas fa-coins"></i>
+                        <span id="shop-coins">0</span>
+                    </div>
+                </div>
+                
+                <div class="shop-categories" id="shop-categories">
+                    <button class="category-btn active" data-category="all">All Items</button>
+                    <button class="category-btn" data-category="physical">Physical</button>
+                    <button class="category-btn" data-category="digital">Digital</button>
+                    <button class="category-btn" data-category="voucher">Vouchers</button>
+                    <button class="category-btn" data-category="experience">Experiences</button>
+                </div>
+                
+                <div class="prize-grid" id="prize-grid">
+                    <!-- Prizes will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Inventory Tab -->
+            <div id="inventory-tab" class="tab-container">
+                <h2 style="margin-bottom: 12px; font-size: 18px; color: var(--primary);">My Items</h2>
+                
+                <div class="inventory-filters" id="inventory-filters">
+                    <button class="filter-btn active" data-status="all">All Items</button>
+                    <button class="filter-btn" data-status="active">Available</button>
+                    <button class="filter-btn" data-status="used">Used</button>
+                    <button class="filter-btn" data-status="expired">Expired</button>
+                </div>
+                
+                <div class="inventory-items" id="inventory-items">
+                    <!-- Inventory items will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Leaderboard Tab -->
+            <div id="leaderboard-tab" class="tab-container">
+                <h2 style="margin-bottom: 12px; font-size: 18px; color: var(--primary);">Leaderboards</h2>
+                
+                <div class="leaderboard-filters" id="leaderboard-filters">
+                    <button class="leaderboard-btn active" data-type="global">Global</button>
+                    <button class="leaderboard-btn" data-type="team">Team</button>
+                    <button class="leaderboard-btn" data-type="friends">Friends</button>
+                </div>
+                
+                <div id="my-rank-card" class="my-rank-card">
+                    <!-- My rank will be loaded here -->
+                </div>
+                
+                <div class="leaderboard-list" id="leaderboard-list">
+                    <!-- Leaderboard entries will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Profile Tab -->
+            <div id="profile-tab" class="tab-container">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2 class="profile-name" id="profile-name">John Doe</h2>
+                    <p class="profile-email" id="profile-email">john@example.com</p>
+                </div>
+                
+                <div class="profile-stats">
+                    <div class="stat-card">
+                        <h4>Total Coins</h4>
+                        <div class="stat-number" id="profile-coins">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Missions</h4>
+                        <div class="stat-number" id="profile-missions">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Rank</h4>
+                        <div class="stat-number" id="profile-rank">#0</div>
+                    </div>
+                </div>
+                
+                <div class="profile-actions">
+                    <button class="profile-action-btn" id="edit-profile-btn">
+                        <i class="fas fa-user-edit"></i>
+                        Edit Profile
+                    </button>
+                    <button class="profile-action-btn" id="change-password-btn">
+                        <i class="fas fa-lock"></i>
+                        Change Password
+                    </button>
+                    <button class="profile-action-btn" id="view-activity-btn">
+                        <i class="fas fa-history"></i>
+                        Activity History
+                    </button>
+                    <button class="profile-action-btn logout-btn" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SOS Button -->
+        <button class="sos-btn" id="sos-button">
+            <i class="fas fa-exclamation-triangle"></i>
+        </button>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" data-tab="map">
+                <i class="fas fa-map"></i>
+                <div class="nav-label">Map</div>
+            </div>
+            <div class="nav-item" data-tab="missions">
+                <i class="fas fa-tasks"></i>
+                <div class="nav-label">Missions</div>
+            </div>
+            <div class="nav-item" data-tab="shop">
+                <i class="fas fa-store"></i>
+                <div class="nav-label">Shop</div>
+            </div>
+            <div class="nav-item" data-tab="inventory">
+                <i class="fas fa-box"></i>
+                <div class="nav-label">My Items</div>
+            </div>
+            <div class="nav-item" data-tab="profile">
+                <i class="fas fa-user"></i>
+                <div class="nav-label">Profile</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Media Capture Modal -->
+    <div id="media-modal" class="media-modal">
+        <div class="media-container">
+            <div class="media-header">
+                <h3 id="mission-modal-title">Complete Mission</h3>
+                <p id="mission-modal-question">Take a photo at the location</p>
+            </div>
+            <div class="media-preview">
+                <video id="video-preview" autoplay></video>
+                <canvas id="audio-visualizer" style="display: none; width: 100%; height: 100%;"></canvas>
+                <img id="image-preview" style="display: none; max-width: 100%; max-height: 100%;">
+                <div class="recording-indicator" id="recording-indicator">
+                    <div class="dot"></div>
+                    <span>REC</span>
+                </div>
+                <div class="media-timer" id="media-timer">00:00</div>
+            </div>
+            <div class="media-controls">
+                <button id="capture-photo-btn">
+                    <i class="fas fa-camera"></i> Take Photo
+                </button>
+                <button id="record-video-btn">
+                    <i class="fas fa-video"></i> Record Video
+                </button>
+                <button id="record-audio-btn">
+                    <i class="fas fa-microphone"></i> Record Audio
+                </button>
+                <button id="close-media-modal-btn">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Purchase Modal -->
+    <div id="purchase-modal" class="purchase-modal">
+        <div class="purchase-container">
+            <div style="width: 140px; height: 140px; background: var(--background); border-radius: 10px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
+                <i class="fas fa-gift" style="font-size: 48px;"></i>
+            </div>
+            <h3 id="purchase-title">Prize Name</h3>
+            <p id="purchase-description">Prize description here</p>
+            <div class="purchase-price">
+                <i class="fas fa-coins"></i>
+                <span id="purchase-price">500</span> coins
+            </div>
+            <div class="purchase-buttons">
+                <button id="confirm-purchase-btn" style="background: var(--primary); color: var(--background); border: none;">
+                    <i class="fas fa-shopping-cart"></i> Confirm Purchase
+                </button>
+                <button id="close-purchase-modal-btn" style="background: var(--card); color: var(--text);">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Modal -->
+    <div id="emergency-modal" class="emergency-modal">
+        <div class="emergency-container">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>EMERGENCY ASSISTANCE</h2>
+            <p>Your location has been sent to event organizers. Choose an emergency option:</p>
+            <div class="emergency-buttons">
+                <button id="call-ambulance-btn">
+                    <i class="fas fa-ambulance"></i> Call Ambulance: 064 410 6000
+                </button>
+                <button id="call-tollfree-btn">
+                    <i class="fas fa-phone-alt"></i> Call Toll-Free: 1411
+                </button>
+                <button id="close-emergency-modal-btn" style="margin-top: 16px; background: rgba(255,255,255,0.1);">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing app...');
+            
+            // Configuration
+            const SUPABASE_URL = 'https://wnmncsbbtlpcwviicsbr.supabase.co';
+            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndubW5jc2JidGxwY3d2aWljc2JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxMDU3MTMsImV4cCI6MjA4MTY4MTcxM30.pSOYbXWPLhKItpfDnRMfi3lyPVOvTccQudvN9YIucVs';
+            const MAPBOX_TOKEN = 'pk.eyJ1IjoianVzYSIsImEiOiJjbWpjanh5amEwbDEwM2dzOXVhbjZ5dzcwIn0.stWdbPHCrf9sKrRJRmShlg';
+            
+            // Emergency Numbers
+            const EMERGENCY_NUMBERS = {
+                ambulance: 'tel:0644106000',
+                tollFree: 'tel:1411'
+            };
+
+            // Initialize Supabase
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            
+            // Global State
+            let currentUser = null;
+            let currentSession = null;
+            let userLocation = null;
+            let currentMission = null;
+            let mediaRecorder = null;
+            let recordedChunks = [];
+            let audioRecorder = null;
+            let audioStream = null;
+            let videoStream = null;
+            let recordingTimer = null;
+            let recordingSeconds = 0;
+            let selectedPrize = null;
+            let currentZone = null;
+            let map = null;
+
+            // ============================================
+            // EVENT LISTENERS SETUP
+            // ============================================
+            
+            // Fix: Add preventDefault to auth links
+            document.getElementById('show-signup-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                showSignup();
+            });
+            
+            document.getElementById('show-login-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                showLogin();
+            });
+            
+            // Auth buttons
+            document.getElementById('login-button').addEventListener('click', login);
+            document.getElementById('signup-button').addEventListener('click', signup);
+            
+            // Bottom navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const tab = this.getAttribute('data-tab');
+                    showTab(tab);
+                });
+            });
+            
+            // Profile buttons
+            document.getElementById('profile-button').addEventListener('click', function() {
+                showTab('profile');
+            });
+            document.getElementById('edit-profile-btn').addEventListener('click', editProfile);
+            document.getElementById('change-password-btn').addEventListener('click', changePassword);
+            document.getElementById('view-activity-btn').addEventListener('click', viewActivity);
+            document.getElementById('logout-btn').addEventListener('click', logout);
+            
+            // SOS button
+            document.getElementById('sos-button').addEventListener('click', showEmergencyModal);
+            
+            // Shop filters
+            document.querySelectorAll('#shop-categories .category-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    filterShop(category);
+                });
+            });
+            
+            // Inventory filters
+            document.querySelectorAll('#inventory-filters .filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const status = this.getAttribute('data-status');
+                    filterInventory(status);
+                });
+            });
+            
+            // Leaderboard filters
+            document.querySelectorAll('#leaderboard-filters .leaderboard-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const type = this.getAttribute('data-type');
+                    loadLeaderboard(type);
+                });
+            });
+            
+            // Media modal buttons
+            document.getElementById('capture-photo-btn').addEventListener('click', capturePhoto);
+            document.getElementById('record-video-btn').addEventListener('click', toggleVideoRecording);
+            document.getElementById('record-audio-btn').addEventListener('click', toggleAudioRecording);
+            document.getElementById('close-media-modal-btn').addEventListener('click', closeMediaModal);
+            
+            // Purchase modal buttons
+            document.getElementById('confirm-purchase-btn').addEventListener('click', confirmPurchase);
+            document.getElementById('close-purchase-modal-btn').addEventListener('click', closePurchaseModal);
+            
+            // Emergency modal buttons
+            document.getElementById('call-ambulance-btn').addEventListener('click', callAmbulance);
+            document.getElementById('call-tollfree-btn').addEventListener('click', callTollFree);
+            document.getElementById('close-emergency-modal-btn').addEventListener('click', closeEmergencyModal);
+            
+            // Handle email confirmation
+            supabase.auth.onAuthStateChange((event, session) => {
+                console.log('Auth event:', event);
+                if (event === 'SIGNED_IN' && session) {
+                    console.log('User signed in via email confirmation');
+                    loadUserProfile(session.user.id).then(() => {
+                        showApp();
+                    });
+                } else if (event === 'SIGNED_OUT') {
+                    console.log('User signed out');
+                }
+            });
+            
+            // ============================================
+            // MAP INITIALIZATION
+            // ============================================
+            
+            function initializeMap() {
+                try {
+                    if (mapboxgl.supported()) {
+                        map = new mapboxgl.Map({
+                            container: 'map',
+                            style: 'mapbox://styles/mapbox/dark-v11',
+                            center: [17.08, -22.68], // Swakopmund coordinates
+                            zoom: 13,
+                            attributionControl: false
+                        });
+                        
+                        map.addControl(new mapboxgl.NavigationControl());
+                        console.log('Map initialized successfully');
+                    } else {
+                        console.warn('WebGL not supported, map disabled');
+                        document.getElementById('map').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;">Map not available</div>';
+                    }
+                } catch (error) {
+                    console.error('Map initialization error:', error);
+                    document.getElementById('map').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#888;">Map loading failed</div>';
+                }
+            }
+            
+            // ============================================
+            // AUTH FUNCTIONS
+            // ============================================
+            
+            // Check existing session on load
+            checkSession();
+
+            async function checkSession() {
+                console.log('Checking for existing session...');
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session) {
+                    console.log('Session found:', session.user.email);
+                    currentSession = session;
+                    await loadUserProfile(session.user.id);
+                    showApp();
+                } else {
+                    console.log('No session found');
+                }
+            }
+
+            function showLogin() {
+                console.log('Showing login form');
+                document.getElementById('login-form').style.display = 'block';
+                document.getElementById('signup-form').style.display = 'none';
+                clearMessages();
+            }
+
+            function showSignup() {
+                console.log('Showing signup form');
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('signup-form').style.display = 'block';
+                clearMessages();
+            }
+
+            function clearMessages() {
+                document.getElementById('error-message').style.display = 'none';
+                document.getElementById('success-message').style.display = 'none';
+            }
+
+            async function login() {
+                console.log('Login attempt');
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                
+                if (!email || !password) {
+                    showError('Please fill in all fields');
+                    return;
+                }
+
+                const btn = document.getElementById('login-button');
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+
+                try {
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email,
+                        password
+                    });
+
+                    if (error) {
+                        showError(error.message);
+                        return;
+                    }
+
+                    console.log('Login successful:', data.user.email);
+                    currentSession = data.session;
+                    await loadUserProfile(data.user.id);
+                    showApp();
+                    showToast('Signed in successfully', 'success');
+                } catch (error) {
+                    showError('Login failed: ' + error.message);
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            }
+
+            async function signup() {
+                console.log('Signup attempt');
+                const name = document.getElementById('signup-name').value;
+                const phone = document.getElementById('signup-phone').value;
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                const photoFile = document.getElementById('signup-photo').files[0];
+
+                if (!name || !phone || !email || !password) {
+                    showError('Please fill in all required fields');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showError('Password must be at least 6 characters');
+                    return;
+                }
+
+                const btn = document.getElementById('signup-button');
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+
+                try {
+                    // 1. Sign up with Supabase Auth
+                    const { data: authData, error: authError } = await supabase.auth.signUp({
+                        email,
+                        password,
+                        options: {
+                            data: {
+                                name,
+                                phone
+                            }
+                        }
+                    });
+
+                    if (authError) {
+                        if (authError.message.includes('already registered')) {
+                            throw new Error('This email is already registered. Please sign in instead.');
+                        }
+                        throw new Error(authError.message);
+                    }
+
+                    // 2. Upload profile photo if provided
+                    let avatarUrl = null;
+                    if (photoFile) {
+                        console.log('Uploading profile photo...');
+                        const fileName = `${authData.user.id}/profile_${Date.now()}.jpg`;
+                        const { error: uploadError } = await supabase.storage
+                            .from('profiles')
+                            .upload(fileName, photoFile, {
+                                cacheControl: '3600',
+                                upsert: false
+                            });
+                        
+                        if (!uploadError) {
+                            const { data: urlData } = supabase.storage
+                                .from('profiles')
+                                .getPublicUrl(fileName);
+                            avatarUrl = urlData.publicUrl;
+                            console.log('Photo uploaded:', avatarUrl);
+                        }
+                    }
+
+                    // 3. Create user profile in database
+                    const { error: profileError } = await supabase
+                        .from('users')
+                        .insert([{
+                            id: authData.user.id,
+                            name,
+                            email,
+                            phone,
+                            avatar_url: avatarUrl,
+                            coins: 100, // Starting coins
+                            created_at: new Date().toISOString()
+                        }]);
+
+                    if (profileError) {
+                        if (profileError.code === '23505') {
+                            // User already exists in profiles table
+                            console.log('User profile already exists');
+                        } else {
+                            throw new Error('Profile creation failed: ' + profileError.message);
+                        }
+                    }
+
+                    // 4. Set default role as player
+                    const { error: roleError } = await supabase
+                        .from('user_roles')
+                        .insert([{
+                            user_id: authData.user.id,
+                            role: 'player',
+                            granted_at: new Date().toISOString()
+                        }]);
+
+                    if (roleError) {
+                        console.warn('Role assignment error (may already exist):', roleError.message);
+                    }
+
+                    showSuccess('Account created successfully! Please check your email for verification.');
+                    console.log('Signup successful, verification email sent');
+                    
+                    // Show login form after 3 seconds
+                    setTimeout(() => {
+                        document.getElementById('login-email').value = email;
+                        document.getElementById('login-password').value = '';
+                        showLogin();
+                        showToast('Please check your email to verify your account', 'info');
+                    }, 3000);
+
+                } catch (error) {
+                    console.error('Signup error:', error);
+                    showError(error.message);
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            }
+
+            async function loadUserProfile(userId) {
+                console.log('Loading user profile:', userId);
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+
+                if (error) {
+                    console.error('Error loading user profile:', error);
+                    // Create profile if it doesn't exist
+                    const { data: userData } = await supabase.auth.getUser();
+                    if (userData.user) {
+                        const user = userData.user;
+                        const { error: insertError } = await supabase
+                            .from('users')
+                            .insert([{
+                                id: user.id,
+                                name: user.user_metadata?.name || 'User',
+                                email: user.email,
+                                phone: user.user_metadata?.phone || '',
+                                coins: 100,
+                                created_at: new Date().toISOString()
+                            }]);
+                        
+                        if (!insertError) {
+                            return await loadUserProfile(userId);
+                        }
+                    }
+                    return;
+                }
+
+                if (data) {
+                    currentUser = data;
+                    console.log('User loaded:', data.name);
+                    
+                    // Update UI
+                    const avatarElement = document.querySelector('.profile-avatar');
+                    if (data.avatar_url) {
+                        avatarElement.innerHTML = `<img src="${data.avatar_url}" alt="${data.name}" style="width:100%;height:100%;object-fit:cover;">`;
+                    } else {
+                        avatarElement.innerHTML = '<i class="fas fa-user"></i>';
+                    }
+                    
+                    document.getElementById('user-coins').textContent = data.coins;
+                    document.getElementById('shop-coins').textContent = data.coins;
+                    document.getElementById('profile-coins').textContent = data.coins;
+                    document.getElementById('profile-name').textContent = data.name;
+                    document.getElementById('profile-email').textContent = data.email;
+                    
+                    // Start services
+                    requestLocationPermission();
+                    loadZones();
+                    startEventTimer();
+                    loadShopItems();
+                    loadUserInventory();
+                    loadLeaderboard('global');
+                    updateProfileStats();
+                }
+            }
+
+            function showApp() {
+                console.log('Showing main app');
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+                
+                // Initialize map after DOM is visible
+                if (!map) {
+                    setTimeout(initializeMap, 100);
+                }
+            }
+
+            function showError(message) {
+                console.error('Error:', message);
+                const errorEl = document.getElementById('error-message');
+                errorEl.textContent = message;
+                errorEl.style.display = 'block';
+                setTimeout(() => errorEl.style.display = 'none', 5000);
+            }
+
+            function showSuccess(message) {
+                console.log('Success:', message);
+                const successEl = document.getElementById('success-message');
+                successEl.textContent = message;
+                successEl.style.display = 'block';
+                setTimeout(() => successEl.style.display = 'none', 5000);
+            }
+
+            function showToast(message, type = 'info') {
+                console.log('Toast:', message);
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.innerHTML = `
+                    <div style="display: flex; align-items: start; gap: 10px;">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                        <div style="flex: 1; font-size: 13px;">${message}</div>
+                        <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 0 4px;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                
+                const container = document.getElementById('toast-container');
+                container.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 100);
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => {
+                        if (toast.parentNode === container) {
+                            container.removeChild(toast);
+                        }
+                    }, 300);
+                }, 5000);
+            }
+
+            // ============================================
+            // LOCATION & GEOFENCING FUNCTIONS
+            // ============================================
+            
+            async function requestLocationPermission() {
+                console.log('Requesting location permission...');
+                if ('geolocation' in navigator) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            userLocation = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude,
+                                accuracy: position.coords.accuracy
+                            };
+                            console.log('Location obtained:', userLocation);
+                            updateMapLocation();
+                            startGeofencing();
+                        },
+                        (error) => {
+                            console.warn('Location permission denied:', error);
+                            showToast('Location access is required for full functionality. Please enable location services.', 'error');
+                            // Use default location (Swakopmund)
+                            userLocation = { lat: -22.68, lng: 17.08, accuracy: 10000 };
+                            updateMapLocation();
+                        },
+                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                    );
+                    
+                    // Watch position for real-time updates
+                    const watchId = navigator.geolocation.watchPosition(
+                        (position) => {
+                            userLocation = {
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude,
+                                accuracy: position.coords.accuracy
+                            };
+                            updateMapLocation();
+                            checkZones();
+                        },
+                        (error) => console.error('Location watch error:', error),
+                        { enableHighAccuracy: true, maximumAge: 30000, timeout: 5000 }
+                    );
+                    
+                    // Store watch ID for cleanup
+                    window.geoWatchId = watchId;
+                } else {
+                    console.warn('Geolocation not supported');
+                    userLocation = { lat: -22.68, lng: 17.08, accuracy: 10000 };
+                    updateMapLocation();
+                }
+            }
+
+            function updateMapLocation() {
+                if (userLocation && map) {
+                    console.log('Updating map location:', userLocation);
+                    // Center map on user
+                    map.flyTo({
+                        center: [userLocation.lng, userLocation.lat],
+                        zoom: 15,
+                        essential: true,
+                        duration: 1000
+                    });
+                    
+                    // Remove existing user marker
+                    const existingMarkers = document.getElementsByClassName('user-marker');
+                    while (existingMarkers.length > 0) {
+                        existingMarkers[0].remove();
+                    }
+                    
+                    // Add new user marker
+                    const el = document.createElement('div');
+                    el.className = 'user-marker';
+                    el.style.width = '20px';
+                    el.style.height = '20px';
+                    el.style.backgroundColor = 'var(--primary)';
+                    el.style.borderRadius = '50%';
+                    el.style.border = '3px solid var(--background)';
+                    el.style.boxShadow = '0 0 10px rgba(255, 255, 255, 0.5)';
+                    
+                    new mapboxgl.Marker(el)
+                        .setLngLat([userLocation.lng, userLocation.lat])
+                        .addTo(map);
+                }
+            }
+
+            async function startGeofencing() {
+                console.log('Starting geofencing...');
+                checkZones();
+                // Check zones every 30 seconds
+                setInterval(checkZones, 30000);
+            }
+
+            async function checkZones() {
+                if (!userLocation) {
+                    console.log('No location available for zone check');
+                    return;
+                }
+                
+                console.log('Checking zones...');
+                const { data: zones, error } = await supabase
+                    .from('zones')
+                    .select('*')
+                    .eq('is_active', true);
+                
+                if (error) {
+                    console.error('Error loading zones:', error);
+                    return;
+                }
+                
+                let currentZoneFound = null;
+                
+                if (zones && zones.length > 0) {
+                    zones.forEach(zone => {
+                        if (!zone.coordinates || !zone.coordinates.lat || !zone.coordinates.lng) {
+                            console.warn('Zone missing coordinates:', zone.name);
+                            return;
+                        }
+                        
+                        const distance = getDistance(
+                            userLocation.lat,
+                            userLocation.lng,
+                            zone.coordinates.lat,
+                            zone.coordinates.lng
+                        );
+                        
+                        console.log(`Distance to ${zone.name}: ${distance}m (radius: ${zone.radius_meters || 100}m)`);
+                        
+                        if (distance <= (zone.radius_meters || 100)) {
+                            if (currentZone?.id !== zone.id) {
+                                // Entered new zone
+                                console.log(`Entered zone: ${zone.name}`);
+                                unlockZoneMissions(zone.id);
+                                showToast(`Entered ${zone.name}! Missions unlocked.`, 'success');
+                                currentZoneFound = zone;
+                            }
+                        }
+                    });
+                }
+                
+                currentZone = currentZoneFound;
+                updateCurrentZoneDisplay();
+            }
+
+            function getDistance(lat1, lon1, lat2, lon2) {
+                const R = 6371e3; // Earth radius in meters
+                const φ1 = lat1 * Math.PI/180;
+                const φ2 = lat2 * Math.PI/180;
+                const Δφ = (lat2-lat1) * Math.PI/180;
+                const Δλ = (lon2-lon1) * Math.PI/180;
+                
+                const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                          Math.cos(φ1) * Math.cos(φ2) *
+                          Math.sin(Δλ/2) * Math.sin(Δλ/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                
+                return R * c;
+            }
+
+            function updateCurrentZoneDisplay() {
+                const zoneElement = document.getElementById('current-zone');
+                if (currentZone) {
+                    zoneElement.innerHTML = `
+                        <h4 style="margin-bottom: 8px; color: var(--primary); font-size: 16px;">${currentZone.name}</h4>
+                        <p style="color: var(--text-secondary); font-size: 13px;">
+                            Complete missions in this area to earn coins!
+                        </p>
+                    `;
+                } else {
+                    zoneElement.innerHTML = `
+                        <p style="color: var(--text-secondary); font-size: 13px;">Not in any zone. Move to a marked area to unlock missions.</p>
+                    `;
+                }
+            }
+
+            // ============================================
+            // MISSION FUNCTIONS
+            // ============================================
+            
+            async function unlockZoneMissions(zoneId) {
+                console.log(`Unlocking missions for zone: ${zoneId}`);
+                const { data: missions, error } = await supabase
+                    .from('missions')
+                    .select('*')
+                    .eq('zone_id', zoneId)
+                    .eq('status', 'active');
+                
+                if (error || !missions) {
+                    console.error('Error loading missions:', error);
+                    return;
+                }
+                
+                console.log(`Found ${missions.length} missions in zone`);
+                
+                if (missions.length > 0 && currentUser) {
+                    for (const mission of missions) {
+                        // Check if user mission already exists
+                        const { data: existing } = await supabase
+                            .from('user_missions')
+                            .select('*')
+                            .eq('user_id', currentUser.id)
+                            .eq('mission_id', mission.id)
+                            .single();
+                        
+                        if (!existing) {
+                            // Create unlocked user mission
+                            console.log(`Creating user mission for: ${mission.title}`);
+                            const { error: insertError } = await supabase
+                                .from('user_missions')
+                                .insert([{
+                                    user_id: currentUser.id,
+                                    mission_id: mission.id,
+                                    status: 'unlocked',
+                                    created_at: new Date().toISOString()
+                                }]);
+                            
+                            if (insertError) {
+                                console.error('Error creating user mission:', insertError);
+                            }
+                        } else if (existing.status === 'locked') {
+                            // Update locked mission to unlocked
+                            console.log(`Unlocking existing mission: ${mission.title}`);
+                            await supabase
+                                .from('user_missions')
+                                .update({ status: 'unlocked' })
+                                .eq('id', existing.id);
+                        }
+                    }
+                    
+                    // Reload missions for current zone
+                    if (document.getElementById('missions-tab').classList.contains('active')) {
+                        loadMissionsForZone(zoneId);
+                    }
+                }
+            }
+
+            async function loadZones() {
+                console.log('Loading zones...');
+                const { data: zones, error } = await supabase
+                    .from('zones')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('name');
+                
+                const zoneList = document.getElementById('zone-list');
+                zoneList.innerHTML = '';
+                
+                if (error || !zones || zones.length === 0) {
+                    zoneList.innerHTML = '<p style="color: var(--text-secondary); padding: 20px; text-align: center; font-size: 13px;">No zones available yet.</p>';
+                    console.log('No zones found');
+                    return;
+                }
+                
+                console.log(`Loaded ${zones.length} zones`);
+                
+                zones.forEach((zone, index) => {
+                    const zoneEl = document.createElement('div');
+                    zoneEl.className = 'zone-item';
+                    if (index === 0) zoneEl.classList.add('active');
+                    zoneEl.textContent = zone.name;
+                    zoneEl.addEventListener('click', () => {
+                        document.querySelectorAll('.zone-item').forEach(item => item.classList.remove('active'));
+                        zoneEl.classList.add('active');
+                        loadMissionsForZone(zone.id);
+                    });
+                    zoneList.appendChild(zoneEl);
+                });
+                
+                // Load missions for first zone
+                if (zones.length > 0) {
+                    loadMissionsForZone(zones[0].id);
+                }
+            }
+
+            async function loadMissionsForZone(zoneId) {
+                console.log(`Loading missions for zone: ${zoneId}`);
+                const { data: missions, error } = await supabase
+                    .from('missions')
+                    .select(`
+                        *,
+                        user_missions (
+                            status,
+                            completed_at,
+                            earned_coins
+                        )
+                    `)
+                    .eq('zone_id', zoneId)
+                    .eq('status', 'active')
+                    .order('created_at');
+                
+                const missionsList = document.getElementById('missions-list');
+                missionsList.innerHTML = '';
+                
+                if (error || !missions || missions.length === 0) {
+                    missionsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <p>No missions available in this zone yet.</p>
+                        </div>
+                    `;
+                    console.log('No missions found in zone');
+                    return;
+                }
+                
+                console.log(`Loaded ${missions.length} missions`);
+                
+                missions.forEach(mission => {
+                    const userMission = mission.user_missions?.[0];
+                    const status = userMission?.status || 'locked';
+                    const isCompleted = status === 'completed';
+                    const isUnlocked = status === 'unlocked' || status === 'pending';
+                    
+                    const missionCard = document.createElement('div');
+                    missionCard.className = `mission-card ${status}`;
+                    if (status === 'locked') missionCard.classList.add('locked');
+                    if (isCompleted) missionCard.classList.add('completed');
+                    if (isUnlocked) missionCard.classList.add('unlocked');
+                    
+                    missionCard.innerHTML = `
+                        <div class="mission-header">
+                            <div class="mission-title">${mission.title}</div>
+                            <div class="mission-points">${mission.points} coins</div>
+                        </div>
+                        ${mission.question ? `<div class="mission-question">${mission.question}</div>` : ''}
+                        ${mission.description ? `<div class="mission-description">${mission.description}</div>` : ''}
+                        <div class="mission-actions">
+                            ${isCompleted ? `
+                                <button class="action-btn completed" disabled>
+                                    <i class="fas fa-check"></i> Completed
+                                    ${userMission.earned_coins ? ` (+${userMission.earned_coins} coins)` : ''}
+                                </button>
+                            ` : isUnlocked ? `
+                                <button class="action-btn record start-mission-btn" data-mission-id="${mission.id}">
+                                    <i class="fas fa-play"></i> Start Mission
+                                </button>
+                            ` : `
+                                <button class="action-btn" disabled>
+                                    <i class="fas fa-lock"></i> Locked
+                                </button>
+                            `}
+                        </div>
+                    `;
+                    missionsList.appendChild(missionCard);
+                });
+                
+                // Add event listeners to start mission buttons
+                document.querySelectorAll('.start-mission-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const missionId = this.getAttribute('data-mission-id');
+                        startMission(missionId);
+                    });
+                });
+            }
+
+            async function startMission(missionId) {
+                console.log(`Starting mission: ${missionId}`);
+                const { data: mission, error } = await supabase
+                    .from('missions')
+                    .select('*')
+                    .eq('id', missionId)
+                    .single();
+                
+                if (error || !mission) {
+                    showToast('Mission not found', 'error');
+                    return;
+                }
+                
+                currentMission = mission;
+                console.log('Mission loaded:', mission.title);
+                
+                // Update modal content
+                document.getElementById('mission-modal-title').textContent = mission.title;
+                document.getElementById('mission-modal-question').textContent = mission.question || 'Complete this mission';
+                
+                // Show modal
+                document.getElementById('media-modal').style.display = 'flex';
+                initMediaCapture();
+            }
+
+            // ============================================
+            // MEDIA CAPTURE FUNCTIONS
+            // ============================================
+            
+            function initMediaCapture() {
+                console.log('Initializing media capture');
+                // Reset all previews
+                document.getElementById('video-preview').style.display = 'block';
+                document.getElementById('audio-visualizer').style.display = 'none';
+                document.getElementById('image-preview').style.display = 'none';
+                document.getElementById('recording-indicator').style.display = 'none';
+                document.getElementById('media-timer').style.display = 'none';
+                
+                // Reset recording state
+                recordedChunks = [];
+                recordingSeconds = 0;
+                clearInterval(recordingTimer);
+                
+                // Get camera access
+                navigator.mediaDevices.getUserMedia({ 
+                    video: true, 
+                    audio: true 
+                }).then(stream => {
+                    videoStream = stream;
+                    const video = document.getElementById('video-preview');
+                    video.srcObject = stream;
+                    console.log('Camera access granted');
+                }).catch(err => {
+                    console.error('Camera access error:', err);
+                    showToast('Camera access is required for missions. Please allow camera access.', 'error');
+                });
+            }
+
+            function capturePhoto() {
+                console.log('Capturing photo');
+                const video = document.getElementById('video-preview');
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0);
+                
+                canvas.toBlob(async (blob) => {
+                    console.log('Photo captured, size:', blob.size);
+                    await submitMissionMedia(blob, 'image');
+                }, 'image/jpeg', 0.9);
+            }
+
+            function toggleVideoRecording() {
+                console.log('Toggle video recording');
+                const recordBtn = document.getElementById('record-video-btn');
+                
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    // Stop recording
+                    console.log('Stopping video recording');
+                    mediaRecorder.stop();
+                    recordBtn.innerHTML = '<i class="fas fa-video"></i> Record Video';
+                    
+                    // Hide recording indicator
+                    document.getElementById('recording-indicator').style.display = 'none';
+                    document.getElementById('media-timer').style.display = 'none';
+                    clearInterval(recordingTimer);
+                } else {
+                    // Start recording
+                    console.log('Starting video recording');
+                    const stream = document.getElementById('video-preview').srcObject;
+                    recordedChunks = [];
+                    
+                    const options = { mimeType: 'video/webm;codecs=vp9,opus' };
+                    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                        options.mimeType = 'video/webm;codecs=vp8,opus';
+                    }
+                    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                        options.mimeType = 'video/webm';
+                    }
+                    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                        options.mimeType = 'video/mp4';
+                    }
+                    
+                    try {
+                        mediaRecorder = new MediaRecorder(stream, options);
+                        
+                        mediaRecorder.ondataavailable = (event) => {
+                            if (event.data.size > 0) {
+                                recordedChunks.push(event.data);
+                            }
+                        };
+                        
+                        mediaRecorder.onstop = async () => {
+                            console.log('Video recording stopped, processing...');
+                            const blob = new Blob(recordedChunks, { type: options.mimeType });
+                            await submitMissionMedia(blob, 'video');
+                        };
+                        
+                        mediaRecorder.start();
+                        recordBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Recording';
+                        
+                        // Show recording indicator
+                        document.getElementById('recording-indicator').style.display = 'flex';
+                        document.getElementById('media-timer').style.display = 'block';
+                        
+                        // Start timer
+                        recordingSeconds = 0;
+                        recordingTimer = setInterval(() => {
+                            recordingSeconds++;
+                            const minutes = Math.floor(recordingSeconds / 60);
+                            const seconds = recordingSeconds % 60;
+                            document.getElementById('media-timer').textContent = 
+                                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                        }, 1000);
+                    } catch (e) {
+                        console.error('MediaRecorder error:', e);
+                        showToast('Video recording not supported on this device', 'error');
+                    }
+                }
+            }
+
+            function toggleAudioRecording() {
+                console.log('Toggle audio recording');
+                const audioBtn = document.getElementById('record-audio-btn');
+                
+                if (audioRecorder && audioRecorder.state === 'recording') {
+                    // Stop recording
+                    console.log('Stopping audio recording');
+                    audioRecorder.stop();
+                    audioBtn.innerHTML = '<i class="fas fa-microphone"></i> Record Audio';
+                    
+                    // Hide recording indicator
+                    document.getElementById('recording-indicator').style.display = 'none';
+                    document.getElementById('media-timer').style.display = 'none';
+                    clearInterval(recordingTimer);
+                    
+                    // Stop audio stream
+                    if (audioStream) {
+                        audioStream.getTracks().forEach(track => track.stop());
+                    }
+                } else {
+                    // Start audio recording
+                    console.log('Starting audio recording');
+                    navigator.mediaDevices.getUserMedia({ audio: true })
+                        .then(stream => {
+                            audioStream = stream;
+                            const options = { mimeType: 'audio/webm;codecs=opus' };
+                            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                                options.mimeType = 'audio/webm';
+                            }
+                            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                                options.mimeType = 'audio/mp4';
+                            }
+                            
+                            audioRecorder = new MediaRecorder(stream, options);
+                            recordedChunks = [];
+                            
+                            audioRecorder.ondataavailable = (event) => {
+                                if (event.data.size > 0) {
+                                    recordedChunks.push(event.data);
+                                }
+                            };
+                            
+                            audioRecorder.onstop = async () => {
+                                console.log('Audio recording stopped, processing...');
+                                const blob = new Blob(recordedChunks, { type: options.mimeType });
+                                await submitMissionMedia(blob, 'audio');
+                            };
+                            
+                            audioRecorder.start();
+                            audioBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Audio';
+                            
+                            // Show recording indicator
+                            document.getElementById('recording-indicator').style.display = 'flex';
+                            document.getElementById('media-timer').style.display = 'block';
+                            
+                            // Show audio visualizer
+                            showAudioVisualizer(stream);
+                            
+                            // Start timer
+                            recordingSeconds = 0;
+                            recordingTimer = setInterval(() => {
+                                recordingSeconds++;
+                                const minutes = Math.floor(recordingSeconds / 60);
+                                const seconds = recordingSeconds % 60;
+                                document.getElementById('media-timer').textContent = 
+                                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                            }, 1000);
+                        })
+                        .catch(err => {
+                            console.error('Audio access error:', err);
+                            showToast('Microphone access is required', 'error');
+                        });
+                }
+            }
+
+            function showAudioVisualizer(stream) {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioCtx.createMediaStreamSource(stream);
+                const analyser = audioCtx.createAnalyser();
+                source.connect(analyser);
+                
+                const canvas = document.getElementById('audio-visualizer');
+                canvas.style.display = 'block';
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                const ctx = canvas.getContext('2d');
+                
+                document.getElementById('video-preview').style.display = 'none';
+                
+                function draw() {
+                    if (audioRecorder && audioRecorder.state === 'recording') {
+                        requestAnimationFrame(draw);
+                    }
+                    
+                    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                    analyser.getByteFrequencyData(dataArray);
+                    
+                    ctx.fillStyle = 'rgb(0, 0, 0)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    const barWidth = (canvas.width / dataArray.length) * 2.5;
+                    let x = 0;
+                    
+                    for (let i = 0; i < dataArray.length; i++) {
+                        const barHeight = dataArray[i] / 2;
+                        
+                        ctx.fillStyle = `rgb(255, 255, 255)`;
+                        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+                        
+                        x += barWidth + 1;
+                    }
+                }
+                
+                draw();
+            }
+
+            async function submitMissionMedia(blob, mediaType) {
+                if (!currentMission || !currentUser) {
+                    showToast('Unable to submit mission', 'error');
+                    return;
+                }
+                
+                closeMediaModal();
+                showToast('Uploading submission...', 'info');
+                
+                try {
+                    // 1. Upload to Supabase Storage
+                    const fileExt = mediaType === 'image' ? 'jpg' : mediaType === 'video' ? 'webm' : 'webm';
+                    const fileName = `${currentUser.id}/${currentMission.id}/${Date.now()}.${fileExt}`;
+                    
+                    console.log('Uploading media to storage:', fileName);
+                    const { error: uploadError } = await supabase.storage
+                        .from('submissions')
+                        .upload(fileName, blob, {
+                            cacheControl: '3600',
+                            upsert: false
+                        });
+                    
+                    if (uploadError) throw new Error('Upload failed: ' + uploadError.message);
+                    
+                    // 2. Get public URL
+                    const { data: urlData } = supabase.storage
+                        .from('submissions')
+                        .getPublicUrl(fileName);
+                    
+                    // 3. Create submission record
+                    const { error: submissionError } = await supabase
+                        .from('submissions')
+                        .insert([{
+                            user_id: currentUser.id,
+                            mission_id: currentMission.id,
+                            media_url: urlData.publicUrl,
+                            media_type: mediaType,
+                            status: 'pending',
+                            gps_lat: userLocation?.lat || -22.68,
+                            gps_lng: userLocation?.lng || 17.08,
+                            gps_confidence: userLocation ? Math.max(0, 100 - (userLocation.accuracy || 0)) : 0,
+                            created_at: new Date().toISOString()
+                        }]);
+                    
+                    if (submissionError) throw new Error('Submission failed: ' + submissionError.message);
+                    
+                    // 4. Update user mission status to pending
+                    const { error: missionError } = await supabase
+                        .from('user_missions')
+                        .update({ 
+                            status: 'pending',
+                            submitted_at: new Date().toISOString()
+                        })
+                        .eq('user_id', currentUser.id)
+                        .eq('mission_id', currentMission.id);
+                    
+                    if (missionError) throw new Error('Mission update failed: ' + missionError.message);
+                    
+                    showToast('Submission sent for verification! You will receive coins once approved.', 'success');
+                    
+                    // Reload missions
+                    if (currentZone) {
+                        loadMissionsForZone(currentZone.id);
+                    }
+                    
+                    currentMission = null;
+                    
+                } catch (error) {
+                    console.error('Submission error:', error);
+                    showToast(error.message, 'error');
+                }
+            }
+
+            function closeMediaModal() {
+                console.log('Closing media modal');
+                document.getElementById('media-modal').style.display = 'none';
+                
+                // Stop all media streams
+                if (videoStream) {
+                    videoStream.getTracks().forEach(track => track.stop());
+                    videoStream = null;
+                }
+                
+                if (audioStream) {
+                    audioStream.getTracks().forEach(track => track.stop());
+                    audioStream = null;
+                }
+                
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    mediaRecorder.stop();
+                }
+                
+                if (audioRecorder && audioRecorder.state === 'recording') {
+                    audioRecorder.stop();
+                }
+                
+                // Clear timer
+                clearInterval(recordingTimer);
+                
+                // Reset preview
+                const video = document.getElementById('video-preview');
+                if (video.srcObject) {
+                    video.srcObject.getTracks().forEach(track => track.stop());
+                }
+                video.srcObject = null;
+                document.getElementById('image-preview').style.display = 'none';
+                document.getElementById('audio-visualizer').style.display = 'none';
+            }
+
+            // ============================================
+            // SHOP FUNCTIONS
+            // ============================================
+            
+            async function loadShopItems() {
+                console.log('Loading shop items...');
+                const { data: prizes, error } = await supabase
+                    .from('prizes')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('price');
+                
+                const prizeGrid = document.getElementById('prize-grid');
+                prizeGrid.innerHTML = '';
+                
+                if (error || !prizes || prizes.length === 0) {
+                    prizeGrid.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1 / -1;">
+                            <i class="fas fa-gift"></i>
+                            <p>No prizes available yet. Check back soon!</p>
+                        </div>
+                    `;
+                    console.log('No prizes found');
+                    return;
+                }
+                
+                console.log(`Loaded ${prizes.length} prizes`);
+                
+                prizes.forEach(prize => {
+                    const isSoldOut = prize.remaining_quantity <= 0;
+                    const isLowStock = prize.remaining_quantity > 0 && prize.remaining_quantity <= 5;
+                    const canAfford = currentUser && currentUser.coins >= prize.price;
+                    
+                    const prizeCard = document.createElement('div');
+                    prizeCard.className = `prize-card ${isSoldOut ? 'sold-out' : ''}`;
+                    prizeCard.dataset.category = prize.category || 'physical';
+                    
+                    let inventoryClass = '';
+                    let inventoryText = '';
+                    
+                    if (isSoldOut) {
+                        inventoryClass = 'sold-out';
+                        inventoryText = 'Sold Out';
+                    } else if (isLowStock) {
+                        inventoryClass = 'low-stock';
+                        inventoryText = `Only ${prize.remaining_quantity} left!`;
+                    } else {
+                        inventoryText = `${prize.remaining_quantity} available`;
+                    }
+                    
+                    prizeCard.innerHTML = `
+                        <div class="prize-image" style="display:flex;align-items:center;justify-content:center;color:var(--text-secondary);">
+                            <i class="fas fa-gift" style="font-size:48px;"></i>
+                        </div>
+                        <div class="prize-content">
+                            <h4 class="prize-title">${prize.name}</h4>
+                            <p class="prize-description">${prize.description || 'No description available'}</p>
+                            <div class="prize-price">
+                                <i class="fas fa-coins"></i>
+                                <span>${prize.price}</span> coins
+                            </div>
+                            <div class="inventory-info ${inventoryClass}">${inventoryText}</div>
+                            <button class="buy-btn" data-prize-id="${prize.id}" 
+                                    ${isSoldOut || !canAfford ? 'disabled' : ''}>
+                                ${isSoldOut ? 'Sold Out' : !canAfford ? `Need ${prize.price - currentUser.coins} more coins` : 'Buy Now'}
+                            </button>
+                        </div>
+                    `;
+                    prizeGrid.appendChild(prizeCard);
+                });
+                
+                // Add event listeners to buy buttons
+                document.querySelectorAll('.buy-btn').forEach(btn => {
+                    if (!btn.disabled) {
+                        btn.addEventListener('click', function() {
+                            const prizeId = this.getAttribute('data-prize-id');
+                            showPurchaseModal(prizeId);
+                        });
+                    }
+                });
+            }
+
+            function filterShop(category) {
+                console.log('Filtering shop by category:', category);
+                document.querySelectorAll('#shop-categories .category-btn').forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+                
+                const prizeCards = document.querySelectorAll('.prize-card');
+                prizeCards.forEach(card => {
+                    if (category === 'all' || card.dataset.category === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+
+            async function showPurchaseModal(prizeId) {
+                console.log('Showing purchase modal for prize:', prizeId);
+                const { data: prize, error } = await supabase
+                    .from('prizes')
+                    .select('*')
+                    .eq('id', prizeId)
+                    .single();
+                
+                if (error || !prize) {
+                    showToast('Prize not found', 'error');
+                    return;
+                }
+                
+                selectedPrize = prize;
+                console.log('Prize selected:', prize.name);
+                
+                // Update modal content
+                document.getElementById('purchase-title').textContent = prize.name;
+                document.getElementById('purchase-description').textContent = prize.description || 'No description available';
+                document.getElementById('purchase-price').textContent = prize.price;
+                
+                // Show modal
+                document.getElementById('purchase-modal').style.display = 'flex';
+            }
+
+            async function confirmPurchase() {
+                if (!selectedPrize || !currentUser) return;
+                
+                console.log('Confirming purchase:', selectedPrize.name);
+                
+                if (currentUser.coins < selectedPrize.price) {
+                    showToast(`Insufficient coins. You need ${selectedPrize.price - currentUser.coins} more coins.`, 'error');
+                    closePurchaseModal();
+                    return;
+                }
+                
+                if (selectedPrize.remaining_quantity <= 0) {
+                    showToast('This prize is sold out!', 'error');
+                    closePurchaseModal();
+                    return;
+                }
+                
+                showToast('Processing purchase...', 'info');
+                
+                try {
+                    // 1. Create purchase record
+                    const { error: purchaseError } = await supabase
+                        .from('purchases')
+                        .insert([{
+                            user_id: currentUser.id,
+                            prize_id: selectedPrize.id,
+                            item_name: selectedPrize.name,
+                            item_image: selectedPrize.image_url,
+                            price: selectedPrize.price,
+                            status: 'ordered',
+                            purchased_at: new Date().toISOString()
+                        }]);
+                    
+                    if (purchaseError) throw new Error('Purchase failed: ' + purchaseError.message);
+                    
+                    // 2. Deduct coins from user
+                    const newCoins = currentUser.coins - selectedPrize.price;
+                    const { error: coinsError } = await supabase
+                        .from('users')
+                        .update({ coins: newCoins })
+                        .eq('id', currentUser.id);
+                    
+                    if (coinsError) throw new Error('Coin deduction failed: ' + coinsError.message);
+                    
+                    // 3. Update prize inventory
+                    const newQuantity = selectedPrize.remaining_quantity - 1;
+                    const { error: inventoryError } = await supabase
+                        .from('prizes')
+                        .update({ remaining_quantity: newQuantity })
+                        .eq('id', selectedPrize.id);
+                    
+                    if (inventoryError) throw new Error('Inventory update failed: ' + inventoryError.message);
+                    
+                    // 4. Add to user inventory
+                    const { error: inventoryInsertError } = await supabase
+                        .from('user_inventory')
+                        .insert([{
+                            user_id: currentUser.id,
+                            item_name: selectedPrize.name,
+                            item_image: selectedPrize.image_url,
+                            status: 'active',
+                            acquired_at: new Date().toISOString(),
+                            notes: 'Purchased from shop'
+                        }]);
+                    
+                    if (inventoryInsertError) throw new Error('Inventory insert failed: ' + inventoryInsertError.message);
+                    
+                    // 5. Update local state
+                    currentUser.coins = newCoins;
+                    document.getElementById('user-coins').textContent = newCoins;
+                    document.getElementById('shop-coins').textContent = newCoins;
+                    document.getElementById('profile-coins').textContent = newCoins;
+                    
+                    showToast('Purchase successful! Check your inventory.', 'success');
+                    
+                    // Refresh data
+                    loadShopItems();
+                    loadUserInventory();
+                    
+                } catch (error) {
+                    console.error('Purchase error:', error);
+                    showToast(error.message, 'error');
+                }
+                
+                closePurchaseModal();
+            }
+
+            function closePurchaseModal() {
+                console.log('Closing purchase modal');
+                document.getElementById('purchase-modal').style.display = 'none';
+                selectedPrize = null;
+            }
+
+            // ============================================
+            // INVENTORY FUNCTIONS
+            // ============================================
+            
+            async function loadUserInventory() {
+                if (!currentUser) return;
+                
+                console.log('Loading user inventory...');
+                const { data: inventory, error } = await supabase
+                    .from('user_inventory')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('acquired_at', { ascending: false });
+                
+                const inventoryContainer = document.getElementById('inventory-items');
+                inventoryContainer.innerHTML = '';
+                
+                if (error || !inventory || inventory.length === 0) {
+                    inventoryContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-box-open"></i>
+                            <p>No items in your inventory yet.</p>
+                            <p style="font-size: 13px; margin-top: 8px;">Complete missions to earn coins and buy prizes!</p>
+                        </div>
+                    `;
+                    console.log('No inventory items found');
+                    return;
+                }
+                
+                console.log(`Loaded ${inventory.length} inventory items`);
+                
+                inventory.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'inventory-item';
+                    itemElement.dataset.status = item.status;
+                    
+                    itemElement.innerHTML = `
+                        <div style="width:56px;height:56px;background:var(--background);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);">
+                            <i class="fas fa-gift" style="font-size:24px;"></i>
+                        </div>
+                        <div class="item-info">
+                            <h5>${item.item_name}</h5>
+                            <span class="item-status status-${item.status}">${item.status.charAt(0).toUpperCase() + item.status.slice(1)}</span>
+                            <p class="item-date">Acquired: ${new Date(item.acquired_at).toLocaleDateString()}</p>
+                            ${item.notes ? `<p style="font-size:11px;color:var(--text-secondary);margin-top:4px;">${item.notes}</p>` : ''}
+                        </div>
+                    `;
+                    inventoryContainer.appendChild(itemElement);
+                });
+            }
+
+            function filterInventory(status) {
+                console.log('Filtering inventory by status:', status);
+                document.querySelectorAll('#inventory-filters .filter-btn').forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+                
+                const items = document.querySelectorAll('.inventory-item');
+                items.forEach(item => {
+                    if (status === 'all' || item.dataset.status === status) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+
+            // ============================================
+            // LEADERBOARD FUNCTIONS
+            // ============================================
+            
+            async function loadLeaderboard(type) {
+                console.log('Loading leaderboard:', type);
+                
+                // Update active button
+                const buttons = document.querySelectorAll('#leaderboard-filters .leaderboard-btn');
+                buttons.forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+                
+                const myRankCard = document.getElementById('my-rank-card');
+                const leaderboardList = document.getElementById('leaderboard-list');
+                
+                // Show loading
+                myRankCard.innerHTML = '<div class="spinner"></div>';
+                leaderboardList.innerHTML = '<div class="spinner"></div>';
+                
+                try {
+                    let leaderboardData = [];
+                    
+                    if (type === 'global') {
+                        // Get top 50 users by coins
+                        const { data: users, error } = await supabase
+                            .from('users')
+                            .select('id, name, avatar_url, coins')
+                            .order('coins', { ascending: false })
+                            .limit(50);
+                        
+                        if (!error && users) {
+                            leaderboardData = users.map((user, index) => ({
+                                rank: index + 1,
+                                ...user,
+                                score: user.coins
+                            }));
+                        }
+                    } else {
+                        // For now, use global for all types
+                        const { data: users, error } = await supabase
+                            .from('users')
+                            .select('id, name, avatar_url, coins')
+                            .order('coins', { ascending: false })
+                            .limit(50);
+                        
+                        if (!error && users) {
+                            leaderboardData = users.map((user, index) => ({
+                                rank: index + 1,
+                                ...user,
+                                score: user.coins
+                            }));
+                        }
+                    }
+                    
+                    console.log(`Loaded ${leaderboardData.length} leaderboard entries`);
+                    
+                    // Update my rank
+                    if (currentUser && leaderboardData.length > 0) {
+                        const myRankIndex = leaderboardData.findIndex(u => u.id === currentUser.id);
+                        const myRank = myRankIndex >= 0 ? leaderboardData[myRankIndex] : null;
+                        
+                        if (myRank) {
+                            myRankCard.innerHTML = `
+                                <div style="width:48px;height:48px;border-radius:50%;background:var(--background);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="my-rank-info">
+                                    <h3>Rank #${myRank.rank}</h3>
+                                    <p>${myRank.name}</p>
+                                    <p><i class="fas fa-coins" style="color:var(--accent);margin-right:5px;"></i> ${myRank.coins} coins</p>
+                                </div>
+                            `;
+                        } else {
+                            myRankCard.innerHTML = `
+                                <div style="text-align:center;width:100%;padding:20px;">
+                                    <p style="color:var(--text-secondary);">Complete missions to appear on the leaderboard!</p>
+                                </div>
+                            `;
+                        }
+                    }
+                    
+                    // Update leaderboard list
+                    if (leaderboardData.length > 0) {
+                        leaderboardList.innerHTML = '';
+                        leaderboardData.forEach(user => {
+                            const isMe = user.id === currentUser?.id;
+                            const rankClass = user.rank <= 3 ? `rank-${user.rank}` : '';
+                            
+                            const item = document.createElement('div');
+                            item.className = `leaderboard-item ${isMe ? 'my-rank' : ''}`;
+                            item.innerHTML = `
+                                <div class="rank-number ${rankClass}">${user.rank}</div>
+                                <div style="width:36px;height:36px;border-radius:50%;background:var(--background);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="leaderboard-info">
+                                    <h4>${user.name} ${isMe ? '(You)' : ''}</h4>
+                                    <p>${user.score || user.coins || 0} coins</p>
+                                </div>
+                            `;
+                            leaderboardList.appendChild(item);
+                        });
+                    } else {
+                        leaderboardList.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-trophy"></i>
+                                <p>No leaderboard data available yet.</p>
+                            </div>
+                        `;
+                    }
+                    
+                } catch (error) {
+                    console.error('Error loading leaderboard:', error);
+                    showToast('Failed to load leaderboard', 'error');
+                }
+            }
+
+            // ============================================
+            // PROFILE FUNCTIONS
+            // ============================================
+            
+            async function updateProfileStats() {
+                if (!currentUser) return;
+                
+                console.log('Updating profile stats...');
+                
+                try {
+                    // Get completed mission count
+                    const { count: missionCount, error: missionError } = await supabase
+                        .from('user_missions')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('user_id', currentUser.id)
+                        .eq('status', 'completed');
+                    
+                    if (!missionError) {
+                        document.getElementById('profile-missions').textContent = missionCount || 0;
+                    }
+                    
+                    // Get rank
+                    const { data: users, error: rankError } = await supabase
+                        .from('users')
+                        .select('id, coins')
+                        .order('coins', { ascending: false });
+                    
+                    if (!rankError && users) {
+                        const myRank = users.findIndex(u => u.id === currentUser.id) + 1;
+                        document.getElementById('profile-rank').textContent = myRank > 0 ? `#${myRank}` : '#0';
+                    }
+                } catch (error) {
+                    console.error('Error updating profile stats:', error);
+                }
+            }
+
+            function startEventTimer() {
+                console.log('Starting event timer');
+                // Set event end time (24 hours from now)
+                const eventEnd = new Date();
+                eventEnd.setHours(eventEnd.getHours() + 24);
+                
+                function updateTimer() {
+                    const now = new Date();
+                    const diff = eventEnd - now;
+                    
+                    if (diff <= 0) {
+                        document.getElementById('event-timer').textContent = 'EVENT ENDED';
+                        return;
+                    }
+                    
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    
+                    document.getElementById('event-timer').textContent = 
+                        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    setTimeout(updateTimer, 1000);
+                }
+                
+                updateTimer();
+            }
+
+            // ============================================
+            // UI FUNCTIONS
+            // ============================================
+            
+            function showTab(tabName) {
+                console.log('Showing tab:', tabName);
+                // Hide all tabs
+                document.querySelectorAll('.tab-container').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Remove active from all nav items
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Show selected tab
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+                
+                // Set active nav item
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    if (item.getAttribute('data-tab') === tabName) {
+                        item.classList.add('active');
+                    }
+                });
+                
+                // Load data if needed
+                if (tabName === 'shop') {
+                    loadShopItems();
+                } else if (tabName === 'inventory') {
+                    loadUserInventory();
+                } else if (tabName === 'leaderboard') {
+                    loadLeaderboard('global');
+                } else if (tabName === 'missions') {
+                    loadZones();
+                }
+            }
+
+            function editProfile() {
+                console.log('Edit profile clicked');
+                showToast('Profile editing coming soon!', 'info');
+            }
+
+            function changePassword() {
+                console.log('Change password clicked');
+                showToast('Password change coming soon!', 'info');
+            }
+
+            function viewActivity() {
+                console.log('View activity clicked');
+                showToast('Activity history coming soon!', 'info');
+            }
+
+            async function logout() {
+                console.log('Logging out...');
+                // Stop geolocation watching
+                if (window.geoWatchId && navigator.geolocation) {
+                    navigator.geolocation.clearWatch(window.geoWatchId);
+                }
+                
+                const { error } = await supabase.auth.signOut();
+                if (!error) {
+                    currentUser = null;
+                    currentSession = null;
+                    document.getElementById('app-container').style.display = 'none';
+                    document.getElementById('auth-screen').style.display = 'flex';
+                    showLogin();
+                    showToast('Logged out successfully', 'success');
+                }
+            }
+
+            // ============================================
+            // EMERGENCY FUNCTIONS
+            // ============================================
+            
+            function showEmergencyModal() {
+                console.log('Showing emergency modal');
+                document.getElementById('emergency-modal').style.display = 'flex';
+            }
+
+            function closeEmergencyModal() {
+                console.log('Closing emergency modal');
+                document.getElementById('emergency-modal').style.display = 'none';
+            }
+
+            async function callAmbulance() {
+                console.log('Calling ambulance');
+                // Send emergency alert
+                if (currentUser && userLocation) {
+                    try {
+                        await supabase
+                            .from('emergency_alerts')
+                            .insert([{
+                                user_id: currentUser.id,
+                                user_name: currentUser.name,
+                                user_phone: currentUser.phone,
+                                latitude: userLocation.lat,
+                                longitude: userLocation.lng,
+                                status: 'active',
+                                created_at: new Date().toISOString()
+                            }]);
+                    } catch (error) {
+                        console.error('Error sending emergency alert:', error);
+                    }
+                }
+                
+                // Call ambulance
+                window.location.href = EMERGENCY_NUMBERS.ambulance;
+                closeEmergencyModal();
+            }
+
+            function callTollFree() {
+                console.log('Calling toll-free');
+                window.location.href = EMERGENCY_NUMBERS.tollFree;
+                closeEmergencyModal();
+            }
+
+            console.log('App initialization complete!');
+        });
+    </script>
+</body>
+</html>
